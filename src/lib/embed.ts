@@ -53,8 +53,8 @@ function initializeChatbotWidget(): HTMLIFrameElement | null {
 		// Set iframe styles
 		Object.assign(iframe.style, {
 			position: 'fixed',
-			bottom: '0',
-			right: '0',
+			bottom: '16px',
+			right: '16px',
 			width: DEFAULT_WIDTH,
 			height: DEFAULT_HEIGHT,
 			border: 'none',

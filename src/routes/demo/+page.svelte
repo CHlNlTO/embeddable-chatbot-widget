@@ -79,7 +79,6 @@
 		</p>
 	</div>
 
-	<!-- Add more content to make the page scrollable -->
 	<div class="space-y-6">
 		{#each Array(5) as _, i}
 			<div class="rounded bg-white p-6 shadow-md">
