@@ -3,7 +3,7 @@
 
 	export let hostDomain: string = '';
 
-	const API_URL = 'http://localhost:3000';
+	const API_URL = 'https://02ef-158-62-6-36.ngrok-free.app';
 
 	let isMinimized = false;
 	let userId: string;
