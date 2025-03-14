@@ -11,11 +11,7 @@ declare global {
 
 	// Global widget API type definition
 	interface Window {
-		ChatbotWidget?: {
-			open: () => void;
-			close: () => void;
-			toggle: () => void;
-		};
+		ChatbotWidget?: ChatbotWidgetAPI;
 	}
 }
 
