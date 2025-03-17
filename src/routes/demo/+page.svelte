@@ -1,16 +1,10 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
 
 	let scriptLoaded = false;
 	let widgetOpen = false;
-	let hostname = '';
 
 	onMount(() => {
-		// This runs only in the browser
-		hostname = window.location.hostname || 'localhost';
-
-		// Load the embed script dynamically
 		const script = document.createElement('script');
 		script.src = '/embed.js';
 		script.onload = () => {
@@ -67,13 +61,11 @@
 
 	<div class="mb-8 rounded bg-white p-6 shadow-md">
 		<h3 class="mb-3 text-lg font-semibold">Domain Information</h3>
-		{#if browser}
-			<p>
-				The widget detects that it's running on: <code>{hostname}</code>
-			</p>
-		{:else}
-			<p>Domain information will be shown when page loads in the browser.</p>
-		{/if}
+		<p>
+			The widget detects that it's running on: <code
+				>{window?.location?.hostname || 'localhost'}</code
+			>
+		</p>
 		<p class="mt-2 text-sm text-gray-600">
 			This information is passed to the chatbot to help identify the website it's running on.
 		</p>

@@ -3,7 +3,7 @@
 
 	export let hostDomain: string = '';
 
-	const API_URL = 'https://02ef-158-62-6-36.ngrok-free.app';
+	const API_URL = 'http://localhost:3000';
 
 	let isMinimized = false;
 	let userId: string;
@@ -197,8 +197,8 @@
 </script>
 
 <div
-	class="chatbot-widget absolute right-0 bottom-0 z-50 flex w-auto max-w-sm min-w-xs flex-col overflow-hidden rounded-lg shadow-lg transition-all duration-300"
-	class:h-full={!isMinimized}
+	class="chatbot-widget fixed right-4 bottom-4 z-50 flex w-72 flex-col overflow-hidden rounded-lg shadow-lg transition-all duration-300"
+	class:h-[400px]={!isMinimized}
 	class:h-12={isMinimized}
 >
 	<!-- Header -->
@@ -210,7 +210,7 @@
 		tabindex="0"
 	>
 		<span>Dental Support</span>
-		<button class="cursor-pointer text-white focus:outline-none">
+		<button class="text-white focus:outline-none">
 			{#if isMinimized}
 				<svg
 					xmlns="http://www.w3.org/2000/svg"

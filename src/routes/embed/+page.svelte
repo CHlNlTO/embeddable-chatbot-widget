@@ -16,7 +16,7 @@
 			></pre>
 
 		<p class="text-sm text-gray-600">
-			For production, please replace <code>localhost:5173</code> with your actual domain.
+			For production, replace <code>localhost:5173</code> with your actual domain.
 		</p>
 	</div>
 

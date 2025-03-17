@@ -40,6 +40,6 @@
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
-<!-- <div class="z-50 min-h-screen w-auto max-w-sm"> -->
-<ChatbotWidget {hostDomain} />
-<!-- </div> -->
+<div class="min-h-screen bg-transparent">
+	<ChatbotWidget {hostDomain} />
+</div>
