@@ -1,15 +1,17 @@
 <script lang="ts">
+	// This component will be compiled for development
+	// but its structure will be extracted for the standalone build
 	import { onMount } from 'svelte';
 
 	export let hostDomain: string = '';
+	export let apiUrl: string = 'http://localhost:3000';
 
-	const API_URL = 'https://02ef-158-62-6-36.ngrok-free.app';
-
-	let isMinimized = false;
+	let isMinimized = true;
 	let userId: string;
 	let messages: Array<{ id: string; sender: 'user' | 'bot'; text: string; timestamp: Date }> = [];
 	let inputText = '';
 	let isLoading = false;
+	let containerRef: HTMLElement;
 
 	function toggleMinimize() {
 		isMinimized = !isMinimized;
@@ -38,7 +40,7 @@
 		saveMessages();
 
 		try {
-			const response = await fetch(`${API_URL}/chat`, {
+			const response = await fetch(`${apiUrl}/chat`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
@@ -92,7 +94,7 @@
 
 	async function fetchChatHistory() {
 		try {
-			const response = await fetch(`${API_URL}/history/${userId}`);
+			const response = await fetch(`${apiUrl}/history/${userId}`);
 			if (response.ok) {
 				const data = await response.json();
 				if (data.messages && data.messages.length > 0) {
@@ -111,15 +113,70 @@
 		}
 	}
 
+	async function fetchInitialGreeting() {
+		if (messages.length > 0) return;
+
+		try {
+			isLoading = true;
+			const response = await fetch(`${apiUrl}/chat`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					userId,
+					message: 'hello',
+					domain: hostDomain
+				})
+			});
+
+			if (response.ok) {
+				const data = await response.json();
+				messages = [
+					{
+						id: data.id || crypto.randomUUID(),
+						sender: 'bot',
+						text: data.text,
+						timestamp: new Date(data.timestamp) || new Date()
+					}
+				];
+				saveMessages();
+			} else {
+				throw new Error(`Initial greeting request failed: ${response.status}`);
+			}
+		} catch (error) {
+			console.error('Error getting initial greeting:', error);
+			messages = [
+				{
+					id: crypto.randomUUID(),
+					sender: 'bot',
+					text: `Hello! How can I help you today? You're visiting from ${hostDomain || 'an unknown domain'}.`,
+					timestamp: new Date()
+				}
+			];
+			saveMessages();
+		} finally {
+			isLoading = false;
+		}
+	}
+
 	onMount(async () => {
+		// Initialize userId
 		userId = localStorage.getItem('chatbot-user-id') || crypto.randomUUID();
 		localStorage.setItem('chatbot-user-id', userId);
 
+		// Set minimized state from storage
 		const savedMinimized = localStorage.getItem('chatbot-minimized');
 		if (savedMinimized !== null) {
 			isMinimized = JSON.parse(savedMinimized);
 		}
 
+		// Get domain if not provided
+		if (!hostDomain) {
+			hostDomain = window.location.hostname || 'unknown';
+		}
+
+		// Load messages or initialize chat
 		const historyFetched = await fetchChatHistory();
 
 		if (!historyFetched) {
@@ -133,72 +190,19 @@
 					}));
 				} catch (e) {
 					console.error('Failed to parse saved messages:', e);
-					messages = [];
+					await fetchInitialGreeting();
 				}
+			} else {
+				await fetchInitialGreeting();
 			}
-		}
-
-		if (messages.length === 0) {
-			try {
-				isLoading = true;
-				const response = await fetch(`${API_URL}/chat`, {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json'
-					},
-					body: JSON.stringify({
-						userId,
-						message: 'hello',
-						domain: hostDomain
-					})
-				});
-
-				if (response.ok) {
-					const data = await response.json();
-					messages = [
-						{
-							id: data.id || crypto.randomUUID(),
-							sender: 'bot',
-							text: data.text,
-							timestamp: new Date(data.timestamp) || new Date()
-						}
-					];
-					saveMessages();
-				}
-			} catch (error) {
-				console.error('Error getting initial greeting:', error);
-				messages = [
-					{
-						id: crypto.randomUUID(),
-						sender: 'bot',
-						text: `Hello! How can I help you today? You're visiting from ${hostDomain || 'an unknown domain'}.`,
-						timestamp: new Date()
-					}
-				];
-				saveMessages();
-			} finally {
-				isLoading = false;
-			}
-		}
-
-		if (!hostDomain && window.parent !== window) {
-			try {
-				hostDomain = document.referrer ? new URL(document.referrer).hostname : 'unknown';
-			} catch (e) {
-				console.error('Failed to get referrer domain:', e);
-				hostDomain = 'unknown';
-			}
-		}
-
-		if (window.parent !== window) {
-			window.parent.postMessage('chatbot-widget-loaded', '*');
 		}
 	});
 </script>
 
 <div
-	class="chatbot-widget absolute right-0 bottom-0 z-50 flex w-auto max-w-sm min-w-xs flex-col overflow-hidden rounded-lg shadow-lg transition-all duration-300"
-	class:h-full={!isMinimized}
+	bind:this={containerRef}
+	class="fixed right-4 bottom-4 z-[2147483647] flex w-80 max-w-[90vw] flex-col overflow-hidden rounded-t-lg shadow-lg transition-all duration-300"
+	class:h-[420px]={!isMinimized}
 	class:h-12={isMinimized}
 >
 	<!-- Header -->
@@ -210,13 +214,17 @@
 		tabindex="0"
 	>
 		<span>Dental Support</span>
-		<button class="cursor-pointer text-white focus:outline-none">
+		<button
+			class="text-white focus:outline-none"
+			aria-label={isMinimized ? 'Expand chat' : 'Minimize chat'}
+		>
 			{#if isMinimized}
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
 					class="h-5 w-5"
 					viewBox="0 0 20 20"
 					fill="currentColor"
+					aria-hidden="true"
 				>
 					<path
 						fill-rule="evenodd"
@@ -230,6 +238,7 @@
 					class="h-5 w-5"
 					viewBox="0 0 20 20"
 					fill="currentColor"
+					aria-hidden="true"
 				>
 					<path
 						fill-rule="evenodd"
@@ -278,11 +287,13 @@
 				placeholder="Type your message..."
 				class="flex-1 rounded-l-lg border p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
 				on:keydown={(e) => e.key === 'Enter' && sendMessage()}
+				aria-label="Message input"
 			/>
 			<button
 				on:click={sendMessage}
 				class="rounded-r-lg bg-blue-600 p-2 text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:outline-none"
 				disabled={isLoading}
+				aria-label="Send message"
 			>
 				{#if isLoading}
 					<svg
@@ -290,6 +301,7 @@
 						xmlns="http://www.w3.org/2000/svg"
 						fill="none"
 						viewBox="0 0 24 24"
+						aria-hidden="true"
 					>
 						<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"
 						></circle>

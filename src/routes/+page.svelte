@@ -1,3 +1,32 @@
+<script lang="ts">
+	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
+
+	let scriptLoaded = false;
+	let widgetOpen = false;
+	let hostname = '';
+
+	onMount(() => {
+		// This runs only in the browser
+		hostname = window.location.hostname || 'localhost';
+
+		// Load the embed script dynamically
+		const script = document.createElement('script');
+		script.src = '/embed.js';
+		script.onload = () => {
+			scriptLoaded = true;
+		};
+		document.body.appendChild(script);
+	});
+
+	function toggleWidget() {
+		if (scriptLoaded && window.ChatbotWidget) {
+			window.ChatbotWidget.toggle();
+			widgetOpen = !widgetOpen;
+		}
+	}
+</script>
+
 <div class="flex min-h-screen flex-col items-center justify-center bg-gray-50 p-4">
 	<div class="mx-auto w-full max-w-3xl overflow-hidden rounded-lg bg-white shadow-lg">
 		<div class="bg-blue-600 p-6 text-white">
