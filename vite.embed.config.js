@@ -7,21 +7,20 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 export default defineConfig({
-	// This is not a SvelteKit build, so we don't need SvelteKit plugins
+	// No SvelteKit plugins for this build
 	plugins: [],
 
 	build: {
 		// Don't clear the output directory
 		emptyOutDir: false,
 
-		// Output to the static folder so it can be served by SvelteKit
+		// Output to the static folder so it can be served
 		outDir: 'static',
 
-		// We're not building a library with multiple entry points
-		// Instead we're building a single file
+		// Build as a library with a single entry point
 		lib: {
 			entry: resolve(__dirname, 'src/lib/embed.ts'),
-			formats: ['iife'],
+			formats: ['iife'], // Immediately Invoked Function Expression
 			name: 'ChatbotWidget',
 			fileName: () => 'embed'
 		},
@@ -29,20 +28,24 @@ export default defineConfig({
 		// Optimize for production
 		minify: process.env.NODE_ENV === 'production',
 
-		// Make sure source maps are generated
+		// Create source maps
 		sourcemap: true,
 
-		// Configure Rollup to avoid code splitting and ensure we get a single file
+		// Configure Rollup to create a single file
 		rollupOptions: {
 			output: {
 				// Ensure we get a single file
 				inlineDynamicImports: true,
+
 				// Avoid code splitting
 				manualChunks: undefined,
+
 				// Use consistent naming
 				entryFileNames: 'embed.js',
+
 				// Don't create chunk files
 				chunkFileNames: 'embed.js',
+
 				// Don't create asset files
 				assetFileNames: 'embed.[ext]'
 			}
