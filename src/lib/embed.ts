@@ -33,9 +33,9 @@ interface ChatMessage {
 (() => {
 	// Constants
 	const WIDGET_ID = 'dental-chatbot-widget';
-	const API_URL = 'https://02ef-158-62-6-36.ngrok-free.app'; // Replace with your API URL in production
+	const API_URL = 'https://02ef-158-62-6-36.ngrok-free.app'; // Replace with API URL in production
 
-	// CSS styles for the widget (Tailwind-inspired but manually written)
+	// CSS styles for the widget
 	const CSS = `
     #dental-chatbot-widget {
       position: fixed;
