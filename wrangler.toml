@@ -1,0 +1,9 @@
+name = "dentalflo-chatbot-widget"
+main = "./.svelte-kit/cloudflare/_worker.js"
+compatibility_date = "2025-03-19"
+
+[site]
+bucket = "./.svelte-kit/cloudflare"
+
+[build]
+command = "npm run build"
