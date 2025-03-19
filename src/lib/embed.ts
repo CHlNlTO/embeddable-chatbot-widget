@@ -1,5 +1,5 @@
 /**
- * Dental Chatbot Widget - Embeddable Script
+ * Dentalflo AI Chatbot Widget - Embeddable Script
  *
  * This script creates an iframe that loads the chatbot widget and
  * provides an API for controlling the widget.
@@ -13,24 +13,20 @@ declare global {
 }
 
 // Constants
-const WIDGET_ID = 'dental-chatbot-widget-iframe';
+const WIDGET_ID = 'dentalflo-chatbot-widget-iframe';
 const DEFAULT_WIDTH = '320px';
 const DEFAULT_HEIGHT = '450px';
-const MINIMIZED_HEIGHT = '52px'; // Adjusted to match the new height in the component
+const MINIMIZED_HEIGHT = '52px';
 const DEFAULT_CONFIG = {
-	name: 'Dental Support',
+	name: 'Dentalflo AI Clinic',
 	theme: {
 		textColor: '#FFFFFF',
-		primaryColor: '#FFFFFF', // blue-600
-		secondaryColor: '#E5E7EB', // gray-200
+		primaryColor: '#6247ff',
+		secondaryColor: '#92afff',
 		backgroundColor: '#FFFFFF'
 	},
 	imageUrl: ''
 };
-
-// API URL for config fetching (different from chat API)
-// const WIDGET_CONFIG_API_URL = 'https://8333-158-62-6-36.ngrok-free.app';
-const WIDGET_CONFIG_API_URL = 'https://test.smsbot.dentalfloai.dev/widget';
 
 // Define the clinic configuration interface
 interface ClinicConfig {
@@ -49,7 +45,6 @@ interface ChatbotWidgetAPI {
 	open: () => void;
 	close: () => void;
 	toggle: () => void;
-	setTheme?: (theme: 'light' | 'dark') => void;
 	isOpen: () => boolean;
 }
 
@@ -81,10 +76,10 @@ function getAssistantId(): string | null {
  */
 async function fetchWidgetConfig(assistantId: string): Promise<ClinicConfig> {
 	try {
-		// For widget config, we're using a different API endpoint than the chat API
-		const response = await fetch(
-			`${WIDGET_CONFIG_API_URL}/widget-config?assistantId=${assistantId}`
-		);
+		// For widget config, we're using the local API endpoint in routes/api/widget-config
+		// since this is not existing yet on the backend, but preferably this should be fetched from the backend
+		// TODO: Replace with actual API endpoint
+		const response = await fetch(`/api/widget-config?assistantId=${assistantId}`);
 
 		if (!response.ok) {
 			throw new Error(`Failed to fetch widget config: ${response.status}`);
@@ -104,13 +99,12 @@ async function initializeChatbotWidget(): Promise<HTMLIFrameElement | null> {
 	try {
 		// Prevent duplicates
 		if (document.getElementById(WIDGET_ID)) {
-			console.warn('Dental Chatbot Widget is already initialized');
+			console.warn('Dentalflo AI Chatbot Widget is already initialized');
 			return null;
 		}
 
-		// Get current script element and domain
+		// Get current script element
 		const scriptElement = getCurrentScriptElement();
-		const currentDomain = window.location.hostname || 'unknown';
 
 		// Get assistantId
 		const assistantId = getAssistantId();
@@ -129,8 +123,8 @@ async function initializeChatbotWidget(): Promise<HTMLIFrameElement | null> {
 
 		// Set iframe attributes
 		iframe.id = WIDGET_ID;
-		iframe.title = config.name || 'Dental Support Chat';
-		iframe.setAttribute('aria-label', config.name || 'Dental Support Chat Widget');
+		iframe.title = config.name || 'Dentalflo AI Clinic';
+		iframe.setAttribute('aria-label', config.name || 'Dentalflo AI Clinic Chat Widget');
 
 		// Set iframe styles
 		Object.assign(iframe.style, {
@@ -140,19 +134,18 @@ async function initializeChatbotWidget(): Promise<HTMLIFrameElement | null> {
 			width: DEFAULT_WIDTH,
 			height: DEFAULT_HEIGHT,
 			border: 'none',
-			zIndex: '2147483647', // Max z-index value
+			zIndex: '2147483647',
 			overflow: 'hidden',
 			transition: 'all 0.3s ease',
 			boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
 			borderRadius: '8px 8px 0 0'
 		});
 
-		// Set the src with domain parameter and config
+		// Set the src with assistantId parameter and config
 		const widgetUrl = new URL('/widget', scriptElement?.src || window.location.href);
 
-		// Add domain and other parameters
-		widgetUrl.searchParams.set('domain', currentDomain);
-		widgetUrl.searchParams.set('t', Date.now().toString()); // Cache busting
+		// Add parameters
+		widgetUrl.searchParams.set('t', Date.now().toString());
 
 		// Add assistantId if available
 		if (assistantId) {
@@ -169,7 +162,7 @@ async function initializeChatbotWidget(): Promise<HTMLIFrameElement | null> {
 
 		return iframe;
 	} catch (error) {
-		console.error('Failed to initialize Dental Chatbot Widget:', error);
+		console.error('Failed to initialize Dentalflo AI Chatbot Widget:', error);
 		return null;
 	}
 }
@@ -226,7 +219,7 @@ function createWidgetAPI(iframe: HTMLIFrameElement | null): ChatbotWidgetAPI {
 // Initialize the widget and create API
 (async function () {
 	try {
-		// Create the iframe (now async)
+		// Create the iframe
 		const iframe = await initializeChatbotWidget();
 
 		// Create and expose the API
@@ -237,9 +230,8 @@ function createWidgetAPI(iframe: HTMLIFrameElement | null): ChatbotWidgetAPI {
 
 		// Listen for messages from the iframe
 		window.addEventListener('message', (event) => {
-			// In production, you should verify the origin
 			if (event.data === 'chatbot-widget-loaded') {
-				console.log('Dental Chatbot Widget loaded successfully');
+				console.log('Dentalflo AI Chatbot Widget loaded successfully');
 			}
 			// Listen for minimize/expand messages from the widget
 			else if (event.data === 'chatbot-minimize' && iframe) {
@@ -249,7 +241,7 @@ function createWidgetAPI(iframe: HTMLIFrameElement | null): ChatbotWidgetAPI {
 			}
 		});
 	} catch (error) {
-		console.error('Error initializing Dental Chatbot Widget:', error);
+		console.error('Error initializing Dentalflo AI Chatbot Widget:', error);
 	}
 })();
 

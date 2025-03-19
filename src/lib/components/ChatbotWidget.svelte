@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 
-	export let hostDomain: string = '';
 	export let assistantId: string = '';
 	export let config: {
 		name: string;
@@ -16,8 +15,8 @@
 		name: '',
 		theme: {
 			textColor: '#FFFFFF',
-			primaryColor: '#FFFFFF',
-			secondaryColor: '#E5E7EB',
+			primaryColor: '#6247ff', // Default from color palette
+			secondaryColor: '#92afff',
 			backgroundColor: '#FFFFFF'
 		},
 		imageUrl: ''
@@ -25,11 +24,10 @@
 
 	// API URL for backend calls
 	const API_URL = 'https://test.smsbot.dentalfloai.dev/widget';
-	// const API_URL = 'http://localhost:3000';
 
 	// Local storage keys
-	const API_KEY_STORAGE_KEY = 'dentalflo-api-key';
-	const SESSION_ID_STORAGE_KEY = 'dentalflo-session-id';
+	const SESSION_TOKEN_STORAGE_KEY = 'dentalflo-session-token';
+	const SESSION_ID = 'dentalflo-session-id';
 	const MINIMIZED_STORAGE_KEY = 'chatbot-minimized';
 	const MESSAGES_STORAGE_KEY = 'chatbot-messages';
 
@@ -38,15 +36,14 @@
 	let messages: Array<{
 		id: string;
 		type: 'human' | 'ai' | 'tools';
-		text: string;
-		timestamp: Date;
+		content: string;
+		created_at: Date;
 	}> = [];
 	let inputText = '';
 	let isLoading = false;
 
 	// Authentication credentials
-	let apiKey: string | null = null;
-	let sessionId: string | null = null;
+	let sessionToken: string | null = null;
 
 	function toggleMinimize() {
 		isMinimized = !isMinimized;
@@ -73,12 +70,12 @@
 			{
 				id: messageId,
 				type: 'human',
-				text: userMessage,
-				timestamp: new Date()
+				content: userMessage,
+				created_at: new Date()
 			}
 		];
 
-		saveMessages();
+		// saveMessages();
 
 		await sendMessageToApi(userMessage);
 	}
@@ -88,42 +85,31 @@
 	 */
 	async function sendMessageToApi(message: string, retryOnAuth = true) {
 		try {
-			// Check if we have credentials
-			if (!apiKey || !sessionId) {
+			// Check if we have a valid session token
+			if (!sessionToken) {
 				await initializeChat();
-				if (!apiKey || !sessionId) {
+				if (!sessionToken) {
 					throw new Error('Failed to initialize chat session');
 				}
-			}
-
-			// At this point, we're guaranteed to have valid apiKey and sessionId
-			// TypeScript doesn't know this though, so we'll add a guard
-			if (!apiKey || !sessionId) {
-				throw new Error('Missing API key or session ID');
 			}
 
 			const response = await fetch(`${API_URL}/chat`, {
 				method: 'POST',
 				headers: {
-					'Content-Type': 'application/json'
+					'Content-Type': 'application/json',
+					'Authorization': `Bearer ${sessionToken}`
 				},
 				body: JSON.stringify({
-					message,
-					domain: hostDomain,
-					assistantId,
-					apiKey,
-					sessionId
+					message
 				})
 			});
 
 			if (!response.ok) {
-				// If the error is due to invalid credentials and this is our first retry
+				// If the error is due to invalid token (401) and this is our first retry
 				if (response.status === 401 && retryOnAuth) {
-					// Clear credentials and retry
-					apiKey = null;
-					sessionId = null;
-					localStorage.removeItem(API_KEY_STORAGE_KEY);
-					localStorage.removeItem(SESSION_ID_STORAGE_KEY);
+					// Clear token and retry
+					sessionToken = null;
+					localStorage.removeItem(SESSION_TOKEN_STORAGE_KEY);
 
 					// Retry the message after getting new credentials
 					await initializeChat();
@@ -139,14 +125,14 @@
 			messages = [
 				...messages,
 				{
-					id: data.id || crypto.randomUUID(),
-					type: data.type || 'ai',
-					text: data.text,
-					timestamp: new Date(data.timestamp) || new Date()
+					id: crypto.randomUUID(),
+					type: 'ai',
+					content: data.message,
+					created_at: new Date()
 				}
 			];
 
-			saveMessages();
+			// saveMessages();
 		} catch (error) {
 			console.error('Error sending message:', error);
 
@@ -156,20 +142,20 @@
 				{
 					id: crypto.randomUUID(),
 					type: 'ai',
-					text: 'Sorry, I encountered an error. Please try again later.',
-					timestamp: new Date()
+					content: 'Sorry, I encountered an error. Please try again later.',
+					created_at: new Date()
 				}
 			];
 
-			saveMessages();
+			// saveMessages();
 		} finally {
 			isLoading = false;
 		}
 	}
 
-	function saveMessages() {
-		localStorage.setItem(MESSAGES_STORAGE_KEY, JSON.stringify(messages));
-	}
+	// function saveMessages() {
+	// 	localStorage.setItem(MESSAGES_STORAGE_KEY, JSON.stringify(messages));
+	// }
 
 	/**
 	 * Initialize chat session by calling /start-chat endpoint
@@ -177,25 +163,22 @@
 	 */
 	async function initializeChat() {
 		try {
-			// Check localStorage for existing credentials
-			const storedApiKey = localStorage.getItem(API_KEY_STORAGE_KEY);
-			const storedSessionId = localStorage.getItem(SESSION_ID_STORAGE_KEY);
+			// Check localStorage for existing token and session id
+			const storedToken = localStorage.getItem(SESSION_TOKEN_STORAGE_KEY);
+			const storedSessionId = localStorage.getItem(SESSION_ID);
 
-			let url = `${API_URL}/start-chat?assistantId=${assistantId}&domain=${encodeURIComponent(hostDomain)}`;
+			// Create URL with required assistantId and optional parameters only if they exist
+			let url = `${API_URL}/start-chat?assistantId=${assistantId}`;
+			if (storedSessionId) url += `&sessionId=${storedSessionId}`;
+			if (storedToken) url += `&sessionToken=${storedToken}`;
 
-			// Include credentials if they exist
-			const requestBody: any = {};
-			if (storedApiKey && storedSessionId) {
-				requestBody.apiKey = storedApiKey;
-				requestBody.sessionId = storedSessionId;
-			}
+			const headers: Record<string, string> = {
+				'Content-Type': 'application/json'
+			};
 
 			const response = await fetch(url, {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify(requestBody)
+				method: 'GET',
+				headers,
 			});
 
 			if (!response.ok) {
@@ -204,48 +187,64 @@
 
 			const data = await response.json();
 
-			// Check if response includes API key and session ID
-			if (data.apiKey && data.sessionId) {
-				apiKey = data.apiKey;
-				sessionId = data.sessionId;
-
-				// Store credentials in localStorage (valid for 30 days)
-				localStorage.setItem(API_KEY_STORAGE_KEY, data.apiKey);
-				localStorage.setItem(SESSION_ID_STORAGE_KEY, data.sessionId);
+			// Check if response includes session token
+			if (data.sessionToken && data.session) {
+				sessionToken = data.sessionToken;
+				// Store token in localStorage (valid for one hour)
+				localStorage.setItem(SESSION_TOKEN_STORAGE_KEY, data.sessionToken);
+				localStorage.setItem(SESSION_ID, data.session.id);
 			} else {
-				console.error('Start chat response missing credentials');
+				console.error('Start chat response missing session token');
 				return false;
 			}
 
 			// Check if response includes message history
 			if (data.messages && Array.isArray(data.messages) && data.messages.length > 0) {
+				// Convert API message format to our internal format
 				messages = data.messages.map((msg: any) => ({
-					...msg,
-					timestamp: new Date(msg.timestamp)
+					id: msg.id || crypto.randomUUID(),
+					type: msg.message.type,
+					content: msg.message.content,
+					created_at: new Date(msg.created_at)
 				}));
-				saveMessages();
+				// saveMessages();
 				return true;
 			}
 
-			// If we successfully got credentials but no messages, check localStorage
-			const savedMessages = localStorage.getItem(MESSAGES_STORAGE_KEY);
-			if (savedMessages) {
-				try {
-					const parsed = JSON.parse(savedMessages);
-					messages = parsed.map((msg: any) => ({
-						...msg,
-						timestamp: new Date(msg.timestamp)
-					}));
-				} catch (e) {
-					console.error('Failed to parse saved messages:', e);
-					messages = [];
-				}
-			}
+			// // If we successfully got token but no messages, check localStorage
+			// const savedMessages = localStorage.getItem(MESSAGES_STORAGE_KEY);
+			// if (savedMessages) {
+			// 	try {
+			// 		const parsed = JSON.parse(savedMessages);
+			// 		messages = parsed.map((msg: any) => ({
+			// 			...msg,
+			// 			created_at: new Date(msg.created_at)
+			// 		}));
+			// 	} catch (e) {
+			// 		console.error('Failed to parse saved messages:', e);
+			// 		messages = [];
+			// 	}
+			// }
+
+			await sendMessageToApi('Hello!');
 
 			return true;
 		} catch (error) {
 			console.error('Error initializing chat:', error);
 			return false;
+		}
+	}
+
+	async function fetchWidgetConfig() {
+		try {
+			// Get widget config from our local endpoint
+			const response = await fetch(`/api/widget-config?assistantId=${assistantId}`);
+			if (response.ok) {
+				const configData = await response.json();
+				config = { ...config, ...configData };
+			}
+		} catch (error) {
+			console.error('Error fetching widget config:', error);
 		}
 	}
 
@@ -262,18 +261,12 @@
 			}
 		}
 
-		// Get assistantId and hostDomain from URL
+		// Get assistantId from URL
 		assistantId = urlParams.get('assistantId') || assistantId;
-		hostDomain = urlParams.get('domain') || hostDomain;
 
-		// Try to get domain from referrer if not provided
-		if (!hostDomain && window.parent !== window) {
-			try {
-				hostDomain = document.referrer ? new URL(document.referrer).hostname : 'unknown';
-			} catch (e) {
-				console.error('Failed to get referrer domain:', e);
-				hostDomain = 'unknown';
-			}
+		// If we have assistantId but no config, fetch it
+		if (assistantId && (!config.name || config.name === '')) {
+			await fetchWidgetConfig();
 		}
 
 		// Get minimized state from localStorage
@@ -303,11 +296,11 @@
 					{
 						id: crypto.randomUUID(),
 						type: 'ai',
-						text: `Hello! How can I help you today? You're visiting from ${hostDomain || 'an unknown domain'}.`,
-						timestamp: new Date()
+						content: `Hello! How can I help you today? I'm the AI assistant for ${config.name || 'Dentalflo AI Clinic'}.`,
+						created_at: new Date()
 					}
 				];
-				saveMessages();
+				// saveMessages();
 				isLoading = false;
 			}
 		} else {
@@ -355,7 +348,7 @@
 					class="mr-2 h-8 w-8 rounded-full object-cover"
 				/>
 			{/if}
-			<span>{config.name}</span>
+			<span>{config.name || 'Dentalflo AI Clinic'}</span>
 		</div>
 		<button class="cursor-pointer focus:outline-none" style="color: {config.theme.textColor};">
 			{#if isMinimized}
@@ -394,20 +387,30 @@
 			style="background-color: {config.theme.backgroundColor};"
 		>
 			{#each messages as message (message.id)}
-				<div class="flex {message.type === 'human' ? 'justify-end' : 'justify-start'}">
-					<div
-						class="max-w-[80%] rounded-lg p-2"
-						style="background-color: {message.type === 'human'
-							? config.theme.primaryColor
-							: config.theme.secondaryColor};
-						       color: {message.type === 'human' ? config.theme.textColor : '#333333'};"
-					>
-						<p>{message.text}</p>
-						<div class="mt-1 text-xs opacity-70">
-							{message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-						</div>
+			<div class="flex {message.type === 'human' ? 'justify-end' : 'justify-start'}">
+				<div
+					class="max-w-[80%] rounded-lg p-2"
+					style="background-color: {message.type === 'human'
+						? config.theme.primaryColor
+						: config.theme.secondaryColor};
+								color: {message.type === 'human' ? config.theme.textColor : '#333333'};"
+				>
+					{#if message.content.includes('\n')}
+						{#each message.content.split('\n') as line}
+							{#if line.trim() === ''}
+								<br />
+							{:else}
+								<p>{line}</p>
+							{/if}
+						{/each}
+					{:else}
+						<p>{message.content}</p>
+					{/if}
+					<div class="mt-1 text-xs opacity-70">
+						{message.created_at.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
 					</div>
 				</div>
+			</div>
 			{/each}
 
 			{#if isLoading}

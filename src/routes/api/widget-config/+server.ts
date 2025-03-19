@@ -1,10 +1,9 @@
 // src/routes/api/widget-config/+server.ts
-
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 
-// Mock database of clinic configurations
-const clinicConfigs: Record<string, unknown> = {
+// Sample clinic configurations for widget
+const clinicConfig: Record<string, unknown> = {
 	'123': {
 		name: 'Dental Associates',
 		theme: {
@@ -37,31 +36,38 @@ const clinicConfigs: Record<string, unknown> = {
 		},
 		imageUrl:
 			'https://img.freepik.com/premium-vector/logo-company-business-abstract-design-template-collection_737924-2761.jpg?w=740'
+	},
+	// Default for Dentalflo AI Clinic using the color palette
+	'4a30d4a1-b7c9-47f7-a20b-18ba750f265b': {
+		name: 'Dentalflo AI Clinic',
+		theme: {
+			textColor: '#FFFFFF',
+			primaryColor: '#6247ff', // From the provided palette
+			secondaryColor: '#92afff', // Light blue from palette
+			backgroundColor: '#FFFFFF'
+		},
+		imageUrl: ''
 	}
 };
 
-// Default configuration
-const defaultConfig = {
+// Default configuration if no assistantId is provided
+const DEFAULT_CONFIG = {
 	name: 'Dental Support',
 	theme: {
 		textColor: '#FFFFFF',
-		primaryColor: '#3B82F6', // blue-600
+		primaryColor: '#3869fe', // From the provided palette
 		secondaryColor: '#E5E7EB', // gray-200
 		backgroundColor: '#FFFFFF'
 	},
 	imageUrl: ''
 };
 
-export const GET: RequestHandler = async ({ url }) => {
-	// Get assistantId from query parameter
+export const GET = (({ url }) => {
 	const assistantId = url.searchParams.get('assistantId');
 
-	if (!assistantId) {
-		return json(defaultConfig);
+	if (assistantId && clinicConfig[assistantId]) {
+		return json(clinicConfig[assistantId]);
 	}
 
-	// Return the clinic configuration or default if not found
-	const config = clinicConfigs[assistantId] || defaultConfig;
-
-	return json(config);
-};
+	return json(DEFAULT_CONFIG);
+}) satisfies RequestHandler;
