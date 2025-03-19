@@ -24,8 +24,8 @@
 	};
 
 	// API URL for backend calls
-	// const API_URL = 'https://8333-158-62-6-36.ngrok-free.app';
-	const API_URL = 'http://localhost:3000';
+	const API_URL = 'https://test.smsbot.dentalfloai.dev/widget';
+	// const API_URL = 'http://localhost:3000';
 
 	// Local storage keys
 	const API_KEY_STORAGE_KEY = 'dentalflo-api-key';
