@@ -24,7 +24,7 @@
 	};
 
 	// API URL for backend calls
-	const API_URL = 'http://localhost:3000';
+	const API_URL = 'https://8333-158-62-6-36.ngrok-free.app';
 
 	// Local storage keys
 	const API_KEY_STORAGE_KEY = 'dentalflo-api-key';
