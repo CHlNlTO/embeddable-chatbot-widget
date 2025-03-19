@@ -1,25 +1,22 @@
-name = "dentalflo-chatbot-widget-v1"
+name = "dentalflo-chatbot-widget"
 compatibility_date = "2025-03-19"
 
-# The main entry point should point to the Worker script that SvelteKit generates
-main = "./.svelte-kit/cloudflare/_worker.js"
+# For Pages deployments specifically
+[build]
+command = "npm run build"
+
+[build.upload]
+format = "directory"
+
+# This is what Pages is looking for
+[pages_build_output_dir]
+value = ".svelte-kit/cloudflare"
 
 [site]
 bucket = ".svelte-kit/cloudflare"
 
 [triggers]
 crons = []
-
-[build]
-command = "npm run build"
-
-[env.production]
-# Production-specific environment variables go here
-# API_URL = "https://production-api.example.com"
-
-[env.staging]
-# Staging-specific environment variables go here
-# API_URL = "https://staging-api.example.com"
 
 [vars]
 # Define your environment variables here
