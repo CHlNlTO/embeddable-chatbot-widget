@@ -29,7 +29,7 @@ const DEFAULT_CONFIG = {
 };
 
 // API URL for config fetching (different from chat API)
-const WIDGET_CONFIG_API_URL = 'http://localhost:3000';
+const WIDGET_CONFIG_API_URL = 'https://8333-158-62-6-36.ngrok-free.app';
 
 // Define the clinic configuration interface
 interface ClinicConfig {
