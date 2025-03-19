@@ -1,92 +1,39 @@
-# Dental Chatbot Widget - Embed Script
+# Dentalflo AI Chatbot Widget - Setup Guide
 
-This document explains how the embed script for the Dental Chatbot Widget is built, served, and used.
+## Prerequisites
 
-## Overview
+- Node.js v22.14.0 (check .nvmrc)
+- npm or pnpm
 
-The embed script is a small JavaScript file that can be added to any website via a simple script tag. It creates an iframe that loads the chatbot widget UI and provides an API for controlling the widget.
+## Quick Setup
 
-## Build Process
+1. **Clone the repository**
+   git clone [https://github.com/CHlNlTO/embeddable-chatbot-widget.git](https://github.com/CHlNlTO/embeddable-chatbot-widget.git)
+   cd dentalflo-chatbot-widget
 
-The embed script is written in TypeScript (`src/lib/embed.ts`) and compiled to JavaScript using Vite's library mode. This provides several benefits:
+2. **Install dependencies**
+   npm install
 
-- **Type Safety**: We get the benefits of TypeScript during development
-- **Optimized Output**: Vite minifies and optimizes the script for production
-- **Single File**: The script is bundled into a single file with no dependencies
-- **Source Maps**: Source maps are generated for debugging
+# or with pnpm
 
-### How It Works
+pnpm install
 
-1. The `build:embed` script in `package.json` runs Vite with a special configuration file `vite.embed.config.js`
-2. Vite compiles and bundles `src/lib/embed.ts` into a single JavaScript file
-3. The output is placed in the `static` directory, where it can be served by SvelteKit
-4. The `/embed.js` endpoint serves this file to websites that include the script tag
+3. **Build the embed script**
+   npm run build:embed
 
-## Development Workflow
+4. **Start development server**
+   npm run dev
 
-During development:
+5. **Access the application**
 
-1. Run `npm run dev` to start the SvelteKit dev server
-2. Run `npm run build:embed` in a separate terminal to build the embed script
-3. Any time you make changes to `src/lib/embed.ts`, run `npm run build:embed` again
+- Main demo: http://localhost:5173/
+- Widget page: http://localhost:5173/widget?assistantId=4a30d4a1-b7c9-47f7-a20b-18ba750f265b
 
-During production build:
+## Production Build
 
-1. The `npm run build` command automatically runs `build:embed` before the main SvelteKit build
+npm run build
+npm run preview
 
-> **Important**: The `build:embed` step must run before the SvelteKit build, as the SvelteKit build process needs to include the generated embed.js file in its static assets.
+The embed script can be included on any website with:
 
-## Usage on Websites
-
-To add the chatbot widget to a website, add this script tag to the HTML:
-
-```html
-<script src="https://your-domain.com/embed.js"></script>
-```
-
-### JavaScript API
-
-The embed script exposes a global `ChatbotWidget` object with the following methods:
-
-- `ChatbotWidget.open()` - Expands the widget
-- `ChatbotWidget.close()` - Minimizes the widget
-- `ChatbotWidget.toggle()` - Toggles between expanded and minimized states
-- `ChatbotWidget.isOpen()` - Returns whether the widget is currently expanded
-
-Example usage:
-
-```javascript
-// Open the widget
-document.getElementById('open-chat').addEventListener('click', function () {
-	window.ChatbotWidget.open();
-});
-
-// Close the widget
-document.getElementById('close-chat').addEventListener('click', function () {
-	window.ChatbotWidget.close();
-});
-```
-
-## Production Deployment
-
-When deploying to Cloudflare:
-
-1. The `build:embed` script creates the optimized embed.js file
-2. This file is included in the static assets deployed to Cloudflare
-3. The `/embed.js` endpoint serves the file with appropriate headers
-
-## Troubleshooting
-
-If the embed script is not loading properly:
-
-1. Check that the build process completed successfully
-2. Verify that `static/embed.js` exists
-3. Check browser console for any errors
-4. Confirm that the script tag has the correct URL
-
-## Future Improvements
-
-- Add version query parameter for cache busting
-- Implement theme customization options
-- Add analytics tracking for widget usage
-- Improve error handling and fallbacks
+<script src="https://embeddable-chatbot-widget.vercel.app/embed.js?assistantId=YOUR_ASSISTANT_ID"></script>
