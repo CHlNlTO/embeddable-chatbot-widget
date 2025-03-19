@@ -1,3 +1,5 @@
+<!-- src\routes\widget\+page.svelte -->
+
 <script lang="ts">
 	import ChatbotWidget from '$lib/components/ChatbotWidget.svelte';
 	import { onMount } from 'svelte';

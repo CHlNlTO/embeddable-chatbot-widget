@@ -16,11 +16,11 @@ declare global {
 const WIDGET_ID = 'dental-chatbot-widget-iframe';
 const DEFAULT_WIDTH = '320px';
 const DEFAULT_HEIGHT = '450px';
-const MINIMIZED_HEIGHT = '48px';
+const MINIMIZED_HEIGHT = '52px'; // Adjusted to match the new height in the component
 const DEFAULT_CONFIG = {
 	name: 'Dental Support',
 	theme: {
-		textColor: '#000000',
+		textColor: '#FFFFFF',
 		primaryColor: '#FFFFFF', // blue-600
 		secondaryColor: '#E5E7EB', // gray-200
 		backgroundColor: '#FFFFFF'
@@ -28,8 +28,11 @@ const DEFAULT_CONFIG = {
 	imageUrl: ''
 };
 
+// API URL for config fetching (different from chat API)
+const WIDGET_CONFIG_API_URL = 'http://localhost:3000';
+
 // Define the clinic configuration interface
-export interface ClinicConfig {
+interface ClinicConfig {
 	name: string;
 	theme: {
 		textColor: string;
@@ -77,18 +80,10 @@ function getAssistantId(): string | null {
  */
 async function fetchWidgetConfig(assistantId: string): Promise<ClinicConfig> {
 	try {
-		// Extract base URL from script src
-		const scriptElement = getCurrentScriptElement();
-		let baseUrl = '';
-
-		if (scriptElement && scriptElement.src) {
-			const scriptUrl = new URL(scriptElement.src);
-			baseUrl = `${scriptUrl.protocol}//${scriptUrl.host}`;
-		} else {
-			baseUrl = window.location.origin;
-		}
-
-		const response = await fetch(`${baseUrl}/api/widget-config?assistantId=${assistantId}`);
+		// For widget config, we're using a different API endpoint than the chat API
+		const response = await fetch(
+			`${WIDGET_CONFIG_API_URL}/widget-config?assistantId=${assistantId}`
+		);
 
 		if (!response.ok) {
 			throw new Error(`Failed to fetch widget config: ${response.status}`);
@@ -118,8 +113,11 @@ async function initializeChatbotWidget(): Promise<HTMLIFrameElement | null> {
 
 		// Get assistantId
 		const assistantId = getAssistantId();
+		if (!assistantId) {
+			console.warn('No assistantId provided. Widget may not function correctly.');
+		}
 
-		// Fetch widget configuration
+		// Fetch widget configuration if assistantId is available
 		let config = DEFAULT_CONFIG;
 		if (assistantId) {
 			config = await fetchWidgetConfig(assistantId);
