@@ -16,26 +16,40 @@
 		name: '',
 		theme: {
 			textColor: '#FFFFFF',
-			primaryColor: '#FFFFFF', // blue-600
-			secondaryColor: '#E5E7EB', // gray-200
+			primaryColor: '#FFFFFF',
+			secondaryColor: '#E5E7EB',
 			backgroundColor: '#FFFFFF'
 		},
 		imageUrl: ''
 	};
 
-	// API URL will be determined based on assistantId in a production environment
-	// For development, we'll use a default
-	let API_URL = 'http://localhost:3000';
+	// API URL for backend calls
+	const API_URL = 'http://localhost:3000';
 
+	// Local storage keys
+	const API_KEY_STORAGE_KEY = 'dentalflo-api-key';
+	const SESSION_ID_STORAGE_KEY = 'dentalflo-session-id';
+	const MINIMIZED_STORAGE_KEY = 'chatbot-minimized';
+	const MESSAGES_STORAGE_KEY = 'chatbot-messages';
+
+	// State variables
 	let isMinimized = false;
-	let userId: string;
-	let messages: Array<{ id: string; sender: 'user' | 'bot'; text: string; timestamp: Date }> = [];
+	let messages: Array<{
+		id: string;
+		type: 'human' | 'ai' | 'tools';
+		text: string;
+		timestamp: Date;
+	}> = [];
 	let inputText = '';
 	let isLoading = false;
 
+	// Authentication credentials
+	let apiKey: string | null = null;
+	let sessionId: string | null = null;
+
 	function toggleMinimize() {
 		isMinimized = !isMinimized;
-		localStorage.setItem('chatbot-minimized', JSON.stringify(isMinimized));
+		localStorage.setItem(MINIMIZED_STORAGE_KEY, JSON.stringify(isMinimized));
 
 		// Communicate with parent window to also minimize the iframe
 		if (window !== window.parent) {
@@ -52,11 +66,12 @@
 
 		const messageId = crypto.randomUUID();
 
+		// Add user message to the chat
 		messages = [
 			...messages,
 			{
 				id: messageId,
-				sender: 'user',
+				type: 'human',
 				text: userMessage,
 				timestamp: new Date()
 			}
@@ -64,31 +79,67 @@
 
 		saveMessages();
 
+		await sendMessageToApi(userMessage);
+	}
+
+	/**
+	 * Send message to the API and handle the response
+	 */
+	async function sendMessageToApi(message: string, retryOnAuth = true) {
 		try {
+			// Check if we have credentials
+			if (!apiKey || !sessionId) {
+				await initializeChat();
+				if (!apiKey || !sessionId) {
+					throw new Error('Failed to initialize chat session');
+				}
+			}
+
+			// At this point, we're guaranteed to have valid apiKey and sessionId
+			// TypeScript doesn't know this though, so we'll add a guard
+			if (!apiKey || !sessionId) {
+				throw new Error('Missing API key or session ID');
+			}
+
 			const response = await fetch(`${API_URL}/chat`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
 				},
 				body: JSON.stringify({
-					userId,
-					message: userMessage,
-					domain: hostDomain
-					// assistantId
+					message,
+					domain: hostDomain,
+					assistantId,
+					apiKey,
+					sessionId
 				})
 			});
 
 			if (!response.ok) {
+				// If the error is due to invalid credentials and this is our first retry
+				if (response.status === 401 && retryOnAuth) {
+					// Clear credentials and retry
+					apiKey = null;
+					sessionId = null;
+					localStorage.removeItem(API_KEY_STORAGE_KEY);
+					localStorage.removeItem(SESSION_ID_STORAGE_KEY);
+
+					// Retry the message after getting new credentials
+					await initializeChat();
+					return await sendMessageToApi(message, false);
+				}
+
 				throw new Error(`API responded with status ${response.status}`);
 			}
 
 			const data = await response.json();
 
+			// Add bot response to the chat
 			messages = [
 				...messages,
 				{
 					id: data.id || crypto.randomUUID(),
-					sender: 'bot',
+					type: data.type || 'ai',
 					text: data.text,
 					timestamp: new Date(data.timestamp) || new Date()
 				}
@@ -98,11 +149,12 @@
 		} catch (error) {
 			console.error('Error sending message:', error);
 
+			// Add error message to the chat
 			messages = [
 				...messages,
 				{
 					id: crypto.randomUUID(),
-					sender: 'bot',
+					type: 'ai',
 					text: 'Sorry, I encountered an error. Please try again later.',
 					timestamp: new Date()
 				}
@@ -115,26 +167,83 @@
 	}
 
 	function saveMessages() {
-		localStorage.setItem('chatbot-messages', JSON.stringify(messages));
+		localStorage.setItem(MESSAGES_STORAGE_KEY, JSON.stringify(messages));
 	}
 
-	async function fetchChatHistory() {
+	/**
+	 * Initialize chat session by calling /start-chat endpoint
+	 * This will either retrieve or create new credentials and get message history
+	 */
+	async function initializeChat() {
 		try {
-			const response = await fetch(`${API_URL}/history/${userId}?assistantId=${assistantId}`);
-			if (response.ok) {
-				const data = await response.json();
-				if (data.messages && data.messages.length > 0) {
-					messages = data.messages.map((msg: any) => ({
+			// Check localStorage for existing credentials
+			const storedApiKey = localStorage.getItem(API_KEY_STORAGE_KEY);
+			const storedSessionId = localStorage.getItem(SESSION_ID_STORAGE_KEY);
+
+			let url = `${API_URL}/start-chat?assistantId=${assistantId}&domain=${encodeURIComponent(hostDomain)}`;
+
+			// Include credentials if they exist
+			const requestBody: any = {};
+			if (storedApiKey && storedSessionId) {
+				requestBody.apiKey = storedApiKey;
+				requestBody.sessionId = storedSessionId;
+			}
+
+			const response = await fetch(url, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify(requestBody)
+			});
+
+			if (!response.ok) {
+				throw new Error(`Failed to initialize chat: ${response.status}`);
+			}
+
+			const data = await response.json();
+
+			// Check if response includes API key and session ID
+			if (data.apiKey && data.sessionId) {
+				apiKey = data.apiKey;
+				sessionId = data.sessionId;
+
+				// Store credentials in localStorage (valid for 30 days)
+				localStorage.setItem(API_KEY_STORAGE_KEY, data.apiKey);
+				localStorage.setItem(SESSION_ID_STORAGE_KEY, data.sessionId);
+			} else {
+				console.error('Start chat response missing credentials');
+				return false;
+			}
+
+			// Check if response includes message history
+			if (data.messages && Array.isArray(data.messages) && data.messages.length > 0) {
+				messages = data.messages.map((msg: any) => ({
+					...msg,
+					timestamp: new Date(msg.timestamp)
+				}));
+				saveMessages();
+				return true;
+			}
+
+			// If we successfully got credentials but no messages, check localStorage
+			const savedMessages = localStorage.getItem(MESSAGES_STORAGE_KEY);
+			if (savedMessages) {
+				try {
+					const parsed = JSON.parse(savedMessages);
+					messages = parsed.map((msg: any) => ({
 						...msg,
 						timestamp: new Date(msg.timestamp)
 					}));
-					saveMessages();
-					return true;
+				} catch (e) {
+					console.error('Failed to parse saved messages:', e);
+					messages = [];
 				}
 			}
-			return false;
+
+			return true;
 		} catch (error) {
-			console.error('Error fetching chat history:', error);
+			console.error('Error initializing chat:', error);
 			return false;
 		}
 	}
@@ -152,92 +261,11 @@
 			}
 		}
 
-		// Get assistantId from URL
+		// Get assistantId and hostDomain from URL
 		assistantId = urlParams.get('assistantId') || assistantId;
-
-		// If we have an assistantId, update the API_URL
-		if (assistantId) {
-			// In a production environment, this might be different based on the assistantId
-			// For now, we'll use the same API_URL but include the assistantId in requests
-		}
-
-		userId = localStorage.getItem('chatbot-user-id') || crypto.randomUUID();
-		localStorage.setItem('chatbot-user-id', userId);
-
-		const savedMinimized = localStorage.getItem('chatbot-minimized');
-		if (savedMinimized !== null) {
-			isMinimized = JSON.parse(savedMinimized);
-
-			// Notify parent window of initial state
-			if (window !== window.parent && isMinimized) {
-				window.parent.postMessage('chatbot-minimize', '*');
-			}
-		}
-
 		hostDomain = urlParams.get('domain') || hostDomain;
 
-		const historyFetched = await fetchChatHistory();
-
-		if (!historyFetched) {
-			const savedMessages = localStorage.getItem('chatbot-messages');
-			if (savedMessages) {
-				try {
-					const parsed = JSON.parse(savedMessages);
-					messages = parsed.map((msg: any) => ({
-						...msg,
-						timestamp: new Date(msg.timestamp)
-					}));
-				} catch (e) {
-					console.error('Failed to parse saved messages:', e);
-					messages = [];
-				}
-			}
-		}
-
-		if (messages.length === 0) {
-			try {
-				isLoading = true;
-				const response = await fetch(`${API_URL}/chat`, {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json'
-					},
-					body: JSON.stringify({
-						userId,
-						message: 'hello',
-						domain: hostDomain,
-						assistantId
-					})
-				});
-
-				if (response.ok) {
-					const data = await response.json();
-					messages = [
-						{
-							id: data.id || crypto.randomUUID(),
-							sender: 'bot',
-							text: data.text,
-							timestamp: new Date(data.timestamp) || new Date()
-						}
-					];
-					saveMessages();
-				}
-			} catch (error) {
-				console.error('Error getting initial greeting:', error);
-				messages = [
-					{
-						id: crypto.randomUUID(),
-						sender: 'bot',
-						text: `Hello! How can I help you today? You're visiting from ${hostDomain || 'an unknown domain'}.`,
-						timestamp: new Date()
-					}
-				];
-				saveMessages();
-			} finally {
-				isLoading = false;
-			}
-		}
-
+		// Try to get domain from referrer if not provided
 		if (!hostDomain && window.parent !== window) {
 			try {
 				hostDomain = document.referrer ? new URL(document.referrer).hostname : 'unknown';
@@ -247,6 +275,45 @@
 			}
 		}
 
+		// Get minimized state from localStorage
+		const savedMinimized = localStorage.getItem(MINIMIZED_STORAGE_KEY);
+		if (savedMinimized !== null) {
+			isMinimized = JSON.parse(savedMinimized);
+
+			// Notify parent window of initial state
+			if (window !== window.parent && isMinimized) {
+				window.parent.postMessage('chatbot-minimize', '*');
+			}
+		}
+
+		// Initialize chat session and get message history
+		isLoading = true;
+		await initializeChat();
+
+		// If we have no messages, send an initial greeting
+		if (messages.length === 0) {
+			try {
+				await sendMessageToApi('hello');
+			} catch (error) {
+				console.error('Error getting initial greeting:', error);
+
+				// Add fallback greeting message
+				messages = [
+					{
+						id: crypto.randomUUID(),
+						type: 'ai',
+						text: `Hello! How can I help you today? You're visiting from ${hostDomain || 'an unknown domain'}.`,
+						timestamp: new Date()
+					}
+				];
+				saveMessages();
+				isLoading = false;
+			}
+		} else {
+			isLoading = false;
+		}
+
+		// Notify parent window that widget is loaded
 		if (window.parent !== window) {
 			window.parent.postMessage('chatbot-widget-loaded', '*');
 		}
@@ -255,10 +322,10 @@
 		window.addEventListener('message', (event) => {
 			if (event.data === 'chatbot-open') {
 				isMinimized = false;
-				localStorage.setItem('chatbot-minimized', 'false');
+				localStorage.setItem(MINIMIZED_STORAGE_KEY, 'false');
 			} else if (event.data === 'chatbot-close') {
 				isMinimized = true;
-				localStorage.setItem('chatbot-minimized', 'true');
+				localStorage.setItem(MINIMIZED_STORAGE_KEY, 'true');
 			}
 		});
 	});
@@ -326,13 +393,13 @@
 			style="background-color: {config.theme.backgroundColor};"
 		>
 			{#each messages as message (message.id)}
-				<div class="flex {message.sender === 'user' ? 'justify-end' : 'justify-start'}">
+				<div class="flex {message.type === 'human' ? 'justify-end' : 'justify-start'}">
 					<div
 						class="max-w-[80%] rounded-lg p-2"
-						style="background-color: {message.sender === 'user'
+						style="background-color: {message.type === 'human'
 							? config.theme.primaryColor
 							: config.theme.secondaryColor};
-						       color: {message.sender === 'user' ? config.theme.textColor : '#333333'};"
+						       color: {message.type === 'human' ? config.theme.textColor : '#333333'};"
 					>
 						<p>{message.text}</p>
 						<div class="mt-1 text-xs opacity-70">
