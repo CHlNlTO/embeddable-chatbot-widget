@@ -16,7 +16,7 @@ declare global {
 const WIDGET_ID = 'dentalflo-chatbot-widget-iframe';
 const DEFAULT_WIDTH = '320px';
 const DEFAULT_HEIGHT = '450px';
-const MINIMIZED_HEIGHT = '52px';
+const MINIMIZED_HEIGHT = '54px';
 const DEFAULT_CONFIG = {
 	name: 'Dentalflo AI Clinic',
 	theme: {
@@ -28,7 +28,6 @@ const DEFAULT_CONFIG = {
 	imageUrl: ''
 };
 
-// Define the clinic configuration interface
 interface ClinicConfig {
 	name: string;
 	theme: {
@@ -40,7 +39,6 @@ interface ClinicConfig {
 	imageUrl: string;
 }
 
-// Define the ChatbotWidget API Interface
 interface ChatbotWidgetAPI {
 	open: () => void;
 	close: () => void;
