@@ -7,7 +7,6 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 export default defineConfig({
-	// This is not a SvelteKit build, so we don't need SvelteKit plugins
 	plugins: [],
 
 	build: {

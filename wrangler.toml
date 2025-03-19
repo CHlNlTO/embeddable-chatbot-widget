@@ -2,7 +2,11 @@ name = "dentalflo-chatbot-widget"
 main = "./.svelte-kit/cloudflare/_worker.js"
 compatibility_date = "2025-03-19"
 
-compatibility_flags = ["nodejs_compat"]
+compatibility_flags = [
+  "nodejs_compat",
+  "streams_enable_constructors",
+  "transformstream_enable_standard_constructor"
+]
 
 [site]
 bucket = "./.svelte-kit/cloudflare"
