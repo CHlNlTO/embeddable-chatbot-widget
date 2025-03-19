@@ -10,6 +10,17 @@ bucket = ".svelte-kit/cloudflare"
 [triggers]
 crons = []
 
+[build]
+command = "npm run build"
+
+[env.production]
+# Production-specific environment variables go here
+# API_URL = "https://production-api.example.com"
+
+[env.staging]
+# Staging-specific environment variables go here
+# API_URL = "https://staging-api.example.com"
+
 [vars]
 # Define your environment variables here
 # API_URL = "https://api.example.com"
