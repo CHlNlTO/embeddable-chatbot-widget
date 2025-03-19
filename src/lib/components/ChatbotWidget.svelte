@@ -2,8 +2,30 @@
 	import { onMount } from 'svelte';
 
 	export let hostDomain: string = '';
+	export let assistantId: string = '';
+	export let config: {
+		name: string;
+		theme: {
+			textColor: string;
+			primaryColor: string;
+			secondaryColor: string;
+			backgroundColor: string;
+		};
+		imageUrl: string;
+	} = {
+		name: '',
+		theme: {
+			textColor: '#FFFFFF',
+			primaryColor: '#FFFFFF', // blue-600
+			secondaryColor: '#E5E7EB', // gray-200
+			backgroundColor: '#FFFFFF'
+		},
+		imageUrl: ''
+	};
 
-	const API_URL = 'https://02ef-158-62-6-36.ngrok-free.app';
+	// API URL will be determined based on assistantId in a production environment
+	// For development, we'll use a default
+	let API_URL = 'http://localhost:3000';
 
 	let isMinimized = false;
 	let userId: string;
@@ -14,6 +36,11 @@
 	function toggleMinimize() {
 		isMinimized = !isMinimized;
 		localStorage.setItem('chatbot-minimized', JSON.stringify(isMinimized));
+
+		// Communicate with parent window to also minimize the iframe
+		if (window !== window.parent) {
+			window.parent.postMessage(isMinimized ? 'chatbot-minimize' : 'chatbot-expand', '*');
+		}
 	}
 
 	async function sendMessage() {
@@ -47,6 +74,7 @@
 					userId,
 					message: userMessage,
 					domain: hostDomain
+					// assistantId
 				})
 			});
 
@@ -92,7 +120,7 @@
 
 	async function fetchChatHistory() {
 		try {
-			const response = await fetch(`${API_URL}/history/${userId}`);
+			const response = await fetch(`${API_URL}/history/${userId}?assistantId=${assistantId}`);
 			if (response.ok) {
 				const data = await response.json();
 				if (data.messages && data.messages.length > 0) {
@@ -112,13 +140,41 @@
 	}
 
 	onMount(async () => {
+		// Parse config from URL if present
+		const urlParams = new URLSearchParams(window.location.search);
+		const configStr = urlParams.get('config');
+		if (configStr) {
+			try {
+				const parsedConfig = JSON.parse(decodeURIComponent(configStr));
+				config = { ...config, ...parsedConfig };
+			} catch (error) {
+				console.error('Failed to parse config:', error);
+			}
+		}
+
+		// Get assistantId from URL
+		assistantId = urlParams.get('assistantId') || assistantId;
+
+		// If we have an assistantId, update the API_URL
+		if (assistantId) {
+			// In a production environment, this might be different based on the assistantId
+			// For now, we'll use the same API_URL but include the assistantId in requests
+		}
+
 		userId = localStorage.getItem('chatbot-user-id') || crypto.randomUUID();
 		localStorage.setItem('chatbot-user-id', userId);
 
 		const savedMinimized = localStorage.getItem('chatbot-minimized');
 		if (savedMinimized !== null) {
 			isMinimized = JSON.parse(savedMinimized);
+
+			// Notify parent window of initial state
+			if (window !== window.parent && isMinimized) {
+				window.parent.postMessage('chatbot-minimize', '*');
+			}
 		}
+
+		hostDomain = urlParams.get('domain') || hostDomain;
 
 		const historyFetched = await fetchChatHistory();
 
@@ -149,7 +205,8 @@
 					body: JSON.stringify({
 						userId,
 						message: 'hello',
-						domain: hostDomain
+						domain: hostDomain,
+						assistantId
 					})
 				});
 
@@ -193,24 +250,46 @@
 		if (window.parent !== window) {
 			window.parent.postMessage('chatbot-widget-loaded', '*');
 		}
+
+		// Listen for messages from parent window
+		window.addEventListener('message', (event) => {
+			if (event.data === 'chatbot-open') {
+				isMinimized = false;
+				localStorage.setItem('chatbot-minimized', 'false');
+			} else if (event.data === 'chatbot-close') {
+				isMinimized = true;
+				localStorage.setItem('chatbot-minimized', 'true');
+			}
+		});
 	});
 </script>
 
 <div
 	class="chatbot-widget absolute right-0 bottom-0 z-50 flex w-auto max-w-sm min-w-xs flex-col overflow-hidden rounded-lg shadow-lg transition-all duration-300"
 	class:h-full={!isMinimized}
-	class:h-12={isMinimized}
+	class:h-[52px]={isMinimized}
+	style="background-color: {config.theme.backgroundColor};"
 >
 	<!-- Header -->
 	<div
-		class="flex cursor-pointer items-center justify-between bg-blue-600 p-3 font-bold text-white"
+		class="flex cursor-pointer items-center justify-between p-3 font-bold"
 		on:click={toggleMinimize}
 		on:keydown={(e) => (e.key === 'Enter' || e.key === ' ') && toggleMinimize()}
 		role="button"
 		tabindex="0"
+		style="background-color: {config.theme.primaryColor}; color: {config.theme.textColor};"
 	>
-		<span>Dental Support</span>
-		<button class="cursor-pointer text-white focus:outline-none">
+		<div class="flex items-center">
+			{#if config.imageUrl}
+				<img
+					src={config.imageUrl}
+					alt="{config.name} logo"
+					class="mr-2 h-8 w-8 rounded-full object-cover"
+				/>
+			{/if}
+			<span>{config.name}</span>
+		</div>
+		<button class="cursor-pointer focus:outline-none" style="color: {config.theme.textColor};">
 			{#if isMinimized}
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
@@ -242,13 +321,18 @@
 	</div>
 
 	{#if !isMinimized}
-		<div class="flex-1 space-y-3 overflow-y-auto bg-white p-3">
+		<div
+			class="flex-1 space-y-3 overflow-y-auto p-3"
+			style="background-color: {config.theme.backgroundColor};"
+		>
 			{#each messages as message (message.id)}
 				<div class="flex {message.sender === 'user' ? 'justify-end' : 'justify-start'}">
 					<div
-						class="max-w-[80%] rounded-lg p-2 {message.sender === 'user'
-							? 'bg-blue-500 text-white'
-							: 'bg-gray-200 text-gray-800'}"
+						class="max-w-[80%] rounded-lg p-2"
+						style="background-color: {message.sender === 'user'
+							? config.theme.primaryColor
+							: config.theme.secondaryColor};
+						       color: {message.sender === 'user' ? config.theme.textColor : '#333333'};"
 					>
 						<p>{message.text}</p>
 						<div class="mt-1 text-xs opacity-70">
@@ -260,7 +344,10 @@
 
 			{#if isLoading}
 				<div class="flex justify-start">
-					<div class="max-w-[80%] rounded-lg bg-gray-200 p-2 text-gray-800">
+					<div
+						class="max-w-[80%] rounded-lg p-2"
+						style="background-color: {config.theme.secondaryColor}; color: #333333;"
+					>
 						<div class="flex space-x-1">
 							<div class="h-2 w-2 animate-bounce rounded-full bg-gray-500"></div>
 							<div class="h-2 w-2 animate-bounce rounded-full bg-gray-500 delay-100"></div>
@@ -271,17 +358,22 @@
 			{/if}
 		</div>
 
-		<div class="flex border-t border-gray-200 bg-white p-3">
+		<div
+			class="flex border-t border-gray-200 p-3"
+			style="background-color: {config.theme.backgroundColor};"
+		>
 			<input
 				type="text"
 				bind:value={inputText}
 				placeholder="Type your message..."
-				class="flex-1 rounded-l-lg border p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+				class="flex-1 rounded-l-lg border p-2 focus:outline-none"
+				style="border-color: {config.theme.primaryColor};"
 				on:keydown={(e) => e.key === 'Enter' && sendMessage()}
 			/>
 			<button
 				on:click={sendMessage}
-				class="rounded-r-lg bg-blue-600 p-2 text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+				class="rounded-r-lg p-2 text-white hover:opacity-90 focus:outline-none"
+				style="background-color: {config.theme.primaryColor}; color: {config.theme.textColor};"
 				disabled={isLoading}
 			>
 				{#if isLoading}

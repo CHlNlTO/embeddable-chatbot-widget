@@ -5,12 +5,35 @@
 	const isBrowser = typeof window !== 'undefined';
 
 	let hostDomain = '';
+	let assistantId = '';
+	let config = {
+		name: '',
+		theme: {
+			textColor: '#FFFFFF',
+			primaryColor: '#FFFFFF', // blue-600
+			secondaryColor: '#E5E7EB', // gray-200
+			backgroundColor: '#FFFFFF'
+		},
+		imageUrl: ''
+	};
 
-	onMount(() => {
+	onMount(async () => {
 		if (!isBrowser) return;
 
 		const urlParams = new URLSearchParams(window.location.search);
 		hostDomain = urlParams.get('domain') || '';
+		assistantId = urlParams.get('assistantId') || '';
+
+		// Parse config if provided in URL
+		const configStr = urlParams.get('config');
+		if (configStr) {
+			try {
+				const parsedConfig = JSON.parse(decodeURIComponent(configStr));
+				config = { ...config, ...parsedConfig };
+			} catch (e) {
+				console.error('Failed to parse config:', e);
+			}
+		}
 
 		if (!hostDomain && document.referrer) {
 			try {
@@ -36,10 +59,8 @@
 </script>
 
 <svelte:head>
-	<title>Dental Chat Widget</title>
+	<title>Chat Widget</title>
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
-<!-- <div class="z-50 min-h-screen w-auto max-w-sm"> -->
-<ChatbotWidget {hostDomain} />
-<!-- </div> -->
+<ChatbotWidget {hostDomain} {assistantId} {config} />

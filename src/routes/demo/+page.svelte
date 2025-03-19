@@ -12,7 +12,7 @@
 
 		// Load the embed script dynamically
 		const script = document.createElement('script');
-		script.src = '/embed.js';
+		script.src = '/embed.js?assistantId=789';
 		script.onload = () => {
 			scriptLoaded = true;
 		};

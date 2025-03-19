@@ -3,91 +3,907 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Chatbot Widget #1</title>
+		<title>Bright Smile Clinic Clinic</title>
 		<style>
+			/* Reset and Base Styles */
+			* {
+				margin: 0;
+				padding: 0;
+				box-sizing: border-box;
+			}
+
 			body {
-				font-family:
-					-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell,
-					'Open Sans', 'Helvetica Neue', sans-serif;
+				font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 				line-height: 1.6;
 				color: #333;
+				background-color: #f8f9fa;
+			}
+
+			/* Typography */
+			h1,
+			h2,
+			h3,
+			h4 {
+				margin-bottom: 1rem;
+				color: #f59e0b;
+				font-weight: 600;
+			}
+
+			h1 {
+				font-size: 2.5rem;
+			}
+
+			h2 {
+				font-size: 2rem;
+				margin-top: 2rem;
+			}
+
+			h3 {
+				font-size: 1.5rem;
+				margin-top: 1.5rem;
+			}
+
+			p {
+				margin-bottom: 1.5rem;
+			}
+
+			/* Layout */
+			.container {
+				max-width: 1200px;
+				margin: 0 auto;
+				padding: 0 2rem;
+			}
+
+			section {
+				padding: 5rem 0;
+			}
+
+			/* Header */
+			header {
+				background-color: rgba(255, 255, 255, 0.4);
+				backdrop-filter: blur(40px);
+				-webkit-backdrop-filter: blur(40px);
+				box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+				position: sticky;
+				top: 0;
+				z-index: 100;
+			}
+
+			.header-container {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				padding: 1.5rem 2rem;
+			}
+
+			.logo {
+				display: flex;
+				align-items: center;
+				gap: 1rem;
+			}
+
+			.logo img {
+				height: 40px;
+				width: auto;
+			}
+
+			.logo h1 {
+				font-size: 1.5rem;
+				margin: 0;
+			}
+
+			/* Navigation */
+			nav ul {
+				display: flex;
+				list-style: none;
+				gap: 2rem;
+			}
+
+			nav a {
+				text-decoration: none;
+				color: #333;
+				font-weight: 500;
+				transition: color 0.3s;
+				position: relative;
+			}
+
+			nav a:hover {
+				color: #f59e0b;
+			}
+
+			nav a::after {
+				content: '';
+				position: absolute;
+				width: 0;
+				height: 2px;
+				bottom: -5px;
+				left: 0;
+				background-color: #f59e0b;
+				transition: width 0.3s;
+			}
+
+			nav a:hover::after {
+				width: 100%;
+			}
+
+			/* Hero Section */
+			#hero {
+				background:
+					linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.6)),
+					url('https://images.unsplash.com/photo-1631051103633-24959376b92d?q=80&w=1965&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')
+						center/cover no-repeat;
+				padding: 8rem 0;
+				text-align: center;
+			}
+
+			.hero-content {
 				max-width: 800px;
 				margin: 0 auto;
-				padding: 20px;
 			}
-			h1 {
-				color: #2563eb;
-				margin-bottom: 1rem;
+
+			.hero-content h1 {
+				font-size: 3rem;
+				margin-bottom: 1.5rem;
 			}
-			.card {
-				border: 1px solid #e5e7eb;
-				border-radius: 8px;
-				padding: 20px;
-				margin-bottom: 20px;
-				box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+
+			.hero-content p {
+				font-size: 1.2rem;
+				margin-bottom: 2rem;
+				color: #555;
 			}
-			button {
-				background-color: #2563eb;
+
+			/* Button Styles */
+			.btn {
+				display: inline-block;
+				padding: 0.8rem 2rem;
+				border-radius: 50px;
+				text-decoration: none;
+				font-weight: 600;
+				transition: all 0.3s;
+				text-align: center;
+			}
+
+			.btn-primary {
+				background-color: #f59e0b;
 				color: white;
-				border: none;
-				border-radius: 4px;
-				padding: 10px 15px;
-				cursor: pointer;
+				border: 2px solid #f59e0b;
+			}
+
+			.btn-primary:hover {
+				background-color: #005b8c;
+				border-color: #005b8c;
+			}
+
+			.btn-secondary {
+				background-color: transparent;
+				color: #f59e0b;
+				border: 2px solid #f59e0b;
+				margin-left: 1rem;
+			}
+
+			.btn-secondary:hover {
+				background-color: #f59e0b;
+				color: white;
+			}
+
+			/* Services Section */
+			#services {
+				background-color: white;
+			}
+
+			.services-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+				gap: 2rem;
+				margin-top: 3rem;
+			}
+
+			.service-card {
+				background-color: #f8f9fa;
+				border-radius: 10px;
+				overflow: hidden;
+				box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+				transition:
+					transform 0.3s,
+					box-shadow 0.3s;
+			}
+
+			.service-card:hover {
+				transform: translateY(-10px);
+				box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+			}
+
+			.service-img {
+				height: 200px;
+				background-size: cover;
+				background-position: center;
+			}
+
+			.service-content {
+				padding: 2rem;
+			}
+
+			/* About Section */
+			#about {
+				background-color: #f0f7fa;
+			}
+
+			.about-grid {
+				display: grid;
+				grid-template-columns: 1fr 1fr;
+				gap: 4rem;
+				align-items: center;
+			}
+
+			.about-image {
+				border-radius: 10px;
+				overflow: hidden;
+				box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+			}
+
+			.about-image img {
+				width: 100%;
+				height: auto;
+				display: block;
+			}
+
+			/* Testimonials Section */
+			#testimonials {
+				background-color: white;
+				text-align: center;
+			}
+
+			.testimonials-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+				gap: 2rem;
+				margin-top: 3rem;
+			}
+
+			.testimonial-card {
+				background-color: #f8f9fa;
+				border-radius: 10px;
+				padding: 2rem;
+				box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+			}
+
+			.testimonial-content {
+				font-style: italic;
+				margin-bottom: 1.5rem;
+				position: relative;
+			}
+
+			.testimonial-content::before,
+			.testimonial-content::after {
+				content: '"';
+				font-size: 2rem;
+				color: #f59e0b;
+			}
+
+			.testimonial-author {
+				font-weight: 600;
+				color: #f59e0b;
+			}
+
+			/* Team Section */
+			#team {
+				background-color: #f0f7fa;
+			}
+
+			.team-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+				gap: 2rem;
+				margin-top: 3rem;
+			}
+
+			.team-card {
+				background-color: white;
+				border-radius: 10px;
+				overflow: hidden;
+				box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+				text-align: center;
+				transition: transform 0.3s;
+			}
+
+			.team-card:hover {
+				transform: translateY(-10px);
+			}
+
+			.team-img {
+				height: 250px;
+				background-size: cover;
+				background-position: center top;
+			}
+
+			.team-info {
+				padding: 1.5rem;
+			}
+
+			.team-info h3 {
+				margin-top: 0;
+				font-size: 1.3rem;
+			}
+
+			.team-info p {
+				margin-bottom: 0.5rem;
+				color: #666;
+			}
+
+			/* Contact Section */
+			#contact {
+				background-color: white;
+			}
+
+			.contact-grid {
+				display: grid;
+				grid-template-columns: 1fr 1fr;
+				gap: 4rem;
+			}
+
+			.contact-info p {
+				display: flex;
+				align-items: center;
+				gap: 1rem;
+				margin-bottom: 1.5rem;
+			}
+
+			.contact-info svg {
+				fill: #f59e0b;
+				flex-shrink: 0;
+			}
+
+			/* Form Styles */
+			.contact-form {
+				background-color: #f8f9fa;
+				padding: 2rem;
+				border-radius: 10px;
+				box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+			}
+
+			.form-group {
+				margin-bottom: 1.5rem;
+			}
+
+			label {
+				display: block;
+				margin-bottom: 0.5rem;
 				font-weight: 500;
 			}
-			button:hover {
-				background-color: #1d4ed8;
+
+			input,
+			textarea,
+			select {
+				width: 100%;
+				padding: 0.8rem 1rem;
+				border: 1px solid #ddd;
+				border-radius: 5px;
+				font-family: inherit;
+				font-size: 1rem;
 			}
-			.controls {
-				margin: 20px 0;
+
+			textarea {
+				resize: vertical;
+				min-height: 150px;
+			}
+
+			/* Footer */
+			footer {
+				background-color: #1d3557;
+				color: white;
+				padding: 3rem 0;
+			}
+
+			.footer-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+				gap: 2rem;
+			}
+
+			.footer-column h3 {
+				color: white;
+				margin-top: 0;
+				margin-bottom: 1.5rem;
+				font-size: 1.3rem;
+			}
+
+			.footer-column ul {
+				list-style: none;
+			}
+
+			.footer-column ul li {
+				margin-bottom: 0.8rem;
+			}
+
+			.footer-column a {
+				color: #c5d1e1;
+				text-decoration: none;
+				transition: color 0.3s;
+			}
+
+			.footer-column a:hover {
+				color: white;
+			}
+
+			.social-links {
 				display: flex;
-				gap: 10px;
+				gap: 1rem;
+				margin-top: 1rem;
+			}
+
+			.social-links a {
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				width: 40px;
+				height: 40px;
+				border-radius: 50%;
+				background-color: rgba(255, 255, 255, 0.1);
+				transition: background-color 0.3s;
+			}
+
+			.social-links a:hover {
+				background-color: rgba(255, 255, 255, 0.2);
+			}
+
+			.copyright {
+				text-align: center;
+				margin-top: 3rem;
+				padding-top: 1.5rem;
+				border-top: 1px solid rgba(255, 255, 255, 0.1);
+				font-size: 0.9rem;
+				color: #c5d1e1;
+			}
+
+			/* Responsive Styles */
+			@media (max-width: 768px) {
+				.header-container {
+					flex-direction: column;
+					text-align: center;
+					padding: 1rem;
+				}
+
+				nav ul {
+					margin-top: 1rem;
+					gap: 1rem;
+					flex-wrap: wrap;
+					justify-content: center;
+				}
+
+				.about-grid,
+				.contact-grid {
+					grid-template-columns: 1fr;
+					gap: 2rem;
+				}
+
+				.hero-content h1 {
+					font-size: 2rem;
+				}
+
+				section {
+					padding: 3rem 0;
+				}
+
+				.btn {
+					display: block;
+					width: 100%;
+					margin-bottom: 1rem;
+				}
+
+				.btn-secondary {
+					margin-left: 0;
+				}
+			}
+
+			@media (max-width: 480px) {
+				.service-card,
+				.testimonial-card,
+				.team-card {
+					min-width: 100%;
+				}
 			}
 		</style>
 	</head>
 	<body>
-		<h1>Chatbot Widget Test Page</h1>
+		<!-- Header -->
+		<header>
+			<div class="header-container container">
+				<div class="logo">
+					<img
+						src="https://img.freepik.com/premium-vector/logo-company-business-abstract-design-template-collection_737924-2761.jpg?w=740"
+						alt="Bright Smile Clinic"
+					/>
+					<h1>Bright Smile Clinic</h1>
+				</div>
+				<nav>
+					<ul>
+						<li><a href="#hero">Home</a></li>
+						<li><a href="#services">Services</a></li>
+						<li><a href="#about">About</a></li>
+						<li><a href="#team">Our Team</a></li>
+						<li><a href="#testimonials">Testimonials</a></li>
+						<li><a href="#contact">Contact</a></li>
+					</ul>
+				</nav>
+			</div>
+		</header>
 
-		<div class="card">
-			<h2>External HTML Test</h2>
-			<p>
-				This is a standalone HTML file that loads the chatbot widget from your SvelteKit
-				application.
-			</p>
-			<p>The widget should appear in the bottom-right corner of the page.</p>
-		</div>
+		<!-- Hero Section -->
+		<section id="hero">
+			<div class="container">
+				<div class="hero-content">
+					<h1>Expert Dental Care for Your Whole Family</h1>
+					<p>
+						At Bright Smile Clinic, we're committed to providing gentle, comprehensive dental care
+						in a comfortable environment. Your perfect smile starts here.
+					</p>
+					<a href="#contact" class="btn btn-primary">Book Appointment</a>
+					<a href="#services" class="btn btn-secondary">Our Services</a>
+				</div>
+			</div>
+		</section>
 
-		<div class="controls">
-			<button onclick="window.ChatbotWidget?.open()">Open Chat</button>
-			<button onclick="window.ChatbotWidget?.close()">Close Chat</button>
-			<button onclick="window.ChatbotWidget?.toggle()">Toggle Chat</button>
-		</div>
+		<!-- Services Section -->
+		<section id="services">
+			<div class="container">
+				<h2>Our Services</h2>
+				<p>We offer a wide range of dental services to meet the needs of your entire family.</p>
 
-		<div class="card">
-			<h2>About this Test</h2>
-			<p>
-				This HTML file demonstrates how a customer would integrate your chatbot widget into their
-				website.
-			</p>
-			<p>
-				The widget is loaded via a simple script tag that points to your SvelteKit application's
-				embed.js endpoint.
-			</p>
-			<p>
-				For production use, you would host your SvelteKit app on a public domain and update the
-				script src accordingly.
-			</p>
-		</div>
+				<div class="services-grid">
+					<div class="service-card">
+						<div
+							class="service-img"
+							style="background-image: url('/api/placeholder/400/200')"
+						></div>
+						<div class="service-content">
+							<h3>General Dentistry</h3>
+							<p>
+								Regular check-ups, cleanings, fillings, and preventative care to maintain your oral
+								health.
+							</p>
+							<a href="#contact" class="btn btn-primary">Learn More </a>
+						</div>
+					</div>
 
-		<div class="card">
-			<h2>Features Demonstrated</h2>
-			<ul>
-				<li>Loading the widget from an external site</li>
-				<li>Using the JavaScript API to control the widget</li>
-				<li>Domain detection (the widget should detect it's running on a local file)</li>
-			</ul>
-		</div>
+					<div class="footer-column">
+						<h3>Quick Links</h3>
+						<ul>
+							<li><a href="#hero">Home</a></li>
+							<li><a href="#services">Services</a></li>
+							<li><a href="#about">About Us</a></li>
+							<li><a href="#team">Our Team</a></li>
+							<li><a href="#testimonials">Testimonials</a></li>
+							<li><a href="#contact">Contact</a></li>
+						</ul>
+					</div>
 
-		<script src="https://embeddable-chatbot-widget.vercel.app/embed.js"></script>
+					<div class="footer-column">
+						<h3>Our Services</h3>
+						<ul>
+							<li><a href="#">General Dentistry</a></li>
+							<li><a href="#">Cosmetic Dentistry</a></li>
+							<li><a href="#">Restorative Dentistry</a></li>
+							<li><a href="#">Pediatric Dentistry</a></li>
+							<li><a href="#">Emergency Dental Care</a></li>
+						</ul>
+					</div>
+
+					<div class="footer-column">
+						<h3>Contact Us</h3>
+						<ul>
+							<li>123 Dental Street, Suite 101</li>
+							<li>Anytown, CA 90210</li>
+							<li>(555) 123-4567</li>
+							<li>info@brightsmile.com</li>
+						</ul>
+					</div>
+
+					<div class="footer-column">
+						<h3>Quick Links</h3>
+						<ul>
+							<li><a href="#hero">Home</a></li>
+							<li><a href="#services">Services</a></li>
+							<li><a href="#about">About Us</a></li>
+							<li><a href="#team">Our Team</a></li>
+							<li><a href="#testimonials">Testimonials</a></li>
+							<li><a href="#contact">Contact</a></li>
+						</ul>
+					</div>
+
+					<div class="footer-column">
+						<h3>Our Services</h3>
+						<ul>
+							<li><a href="#">General Dentistry</a></li>
+							<li><a href="#">Cosmetic Dentistry</a></li>
+							<li><a href="#">Restorative Dentistry</a></li>
+							<li><a href="#">Pediatric Dentistry</a></li>
+							<li><a href="#">Emergency Dental Care</a></li>
+						</ul>
+					</div>
+
+					<div class="footer-column">
+						<h3>Contact Us</h3>
+						<ul>
+							<li>123 Dental Street, Suite 101</li>
+							<li>Anytown, CA 90210</li>
+							<li>(555) 123-4567</li>
+							<li>info@brightsmile.com</li>
+						</ul>
+					</div>
+
+					<div class="service-card">
+						<div
+							class="service-img"
+							style="background-image: url('/api/placeholder/400/200')"
+						></div>
+						<div class="service-content">
+							<h3>Cosmetic Dentistry</h3>
+							<p>Teeth whitening, veneers, bonding, and other procedures to enhance your smile.</p>
+							<a href="#contact" class="btn btn-primary">Learn More</a>
+						</div>
+					</div>
+
+					<div class="service-card">
+						<div
+							class="service-img"
+							style="background-image: url('/api/placeholder/400/200')"
+						></div>
+						<div class="service-content">
+							<h3>Restorative Dentistry</h3>
+							<p>Crowns, bridges, implants, and dentures to restore function and appearance.</p>
+							<a href="#contact" class="btn btn-primary">Learn More</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- About Section -->
+		<section id="about">
+			<div class="container">
+				<div class="about-grid">
+					<div class="about-content">
+						<h2>About Our Practice</h2>
+						<p>
+							Bright Smile Clinic has been serving the community for over 15 years. Our modern
+							facility is equipped with the latest technology to provide you with the highest
+							quality dental care.
+						</p>
+						<p>
+							Our team of experienced dentists and hygienists are dedicated to making your dental
+							visit as comfortable and stress-free as possible. We take the time to listen to your
+							concerns and develop personalized treatment plans to meet your specific needs.
+						</p>
+						<p>
+							We believe in preventative care and educating our patients on maintaining good oral
+							health between visits. Our goal is to help you achieve and maintain a healthy,
+							beautiful smile for life.
+						</p>
+						<a href="#team" class="btn btn-primary">Meet Our Team</a>
+					</div>
+					<div class="about-image">
+						<img src="/api/placeholder/600/400" alt="Modern dental office" />
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- Testimonials Section -->
+		<section id="testimonials">
+			<div class="container">
+				<h2>What Our Patients Say</h2>
+				<p>
+					Don't just take our word for it. Here's what our patients have to say about their
+					experience at Bright Smile Clinic.
+				</p>
+
+				<div class="testimonials-grid">
+					<div class="testimonial-card">
+						<div class="testimonial-content">
+							I've been coming to Bright Smile Clinic for years and have always had a positive
+							experience. The staff is friendly and professional, and Dr. Johnson takes the time to
+							explain everything thoroughly.
+						</div>
+						<div class="testimonial-author">- Sarah M.</div>
+					</div>
+
+					<div class="testimonial-card">
+						<div class="testimonial-content">
+							As someone who used to be terrified of dental visits, I can't recommend Bright Smile
+							Dental enough. They made me feel comfortable and at ease. Now I actually look forward
+							to my appointments!
+						</div>
+						<div class="testimonial-author">- Michael P.</div>
+					</div>
+
+					<div class="testimonial-card">
+						<div class="testimonial-content">
+							The entire staff at Bright Smile Clinic is amazing! They are always on time,
+							efficient, and genuinely care about their patients. My whole family comes here and we
+							all love it.
+						</div>
+						<div class="testimonial-author">- Jennifer T.</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- Team Section -->
+		<section id="team">
+			<div class="container">
+				<h2>Meet Our Team</h2>
+				<p>
+					Our experienced team of dental professionals is dedicated to providing you with the
+					highest quality care in a comfortable environment.
+				</p>
+
+				<div class="team-grid">
+					<div class="team-card">
+						<div class="team-img" style="background-image: url('/api/placeholder/300/300')"></div>
+						<div class="team-info">
+							<h3>Dr. Emily Johnson</h3>
+							<p>Lead Dentist</p>
+							<p>DDS, University of California</p>
+						</div>
+					</div>
+
+					<div class="team-card">
+						<div class="team-img" style="background-image: url('/api/placeholder/300/300')"></div>
+						<div class="team-info">
+							<h3>Dr. David Wilson</h3>
+							<p>Cosmetic Specialist</p>
+							<p>DMD, Harvard University</p>
+						</div>
+					</div>
+
+					<div class="team-card">
+						<div class="team-img" style="background-image: url('/api/placeholder/300/300')"></div>
+						<div class="team-info">
+							<h3>Jessica Martinez</h3>
+							<p>Dental Hygienist</p>
+							<p>RDH, New York University</p>
+						</div>
+					</div>
+
+					<div class="team-card">
+						<div class="team-img" style="background-image: url('/api/placeholder/300/300')"></div>
+						<div class="team-info">
+							<h3>Robert Chen</h3>
+							<p>Office Manager</p>
+							<p>10+ Years Experience</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- Contact Section -->
+		<section id="contact">
+			<div class="container">
+				<h2>Contact Us</h2>
+				<p>Have questions or ready to schedule an appointment? Contact us today!</p>
+
+				<div class="contact-grid">
+					<div class="contact-info">
+						<h3>Our Information</h3>
+						<p>
+							<svg width="24" height="24" viewBox="0 0 24 24">
+								<path
+									d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"
+								/>
+							</svg>
+							123 Dental Street, Suite 101, Anytown, CA 90210
+						</p>
+						<p>
+							<svg width="24" height="24" viewBox="0 0 24 24">
+								<path
+									d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"
+								/>
+							</svg>
+							(555) 123-4567
+						</p>
+						<p>
+							<svg width="24" height="24" viewBox="0 0 24 24">
+								<path
+									d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"
+								/>
+							</svg>
+							info@brightsmile.com
+						</p>
+						<h3>Office Hours</h3>
+						<p>Monday - Friday: 8:00 AM - 6:00 PM</p>
+						<p>Saturday: 9:00 AM - 2:00 PM</p>
+						<p>Sunday: Closed</p>
+					</div>
+
+					<div class="contact-form">
+						<h3>Book an Appointment</h3>
+						<form>
+							<div class="form-group">
+								<label for="name">Full Name</label>
+								<input type="text" id="name" placeholder="Your name" />
+							</div>
+							<div class="form-group">
+								<label for="email">Email Address</label>
+								<input type="email" id="email" placeholder="Your email" />
+							</div>
+							<div class="form-group">
+								<label for="phone">Phone Number</label>
+								<input type="tel" id="phone" placeholder="Your phone number" />
+							</div>
+							<div class="form-group">
+								<label for="service">Service Needed</label>
+								<select id="service">
+									<option value="">Select a service</option>
+									<option value="check-up">Regular Check-up</option>
+									<option value="cleaning">Teeth Cleaning</option>
+									<option value="whitening">Teeth Whitening</option>
+									<option value="cosmetic">Cosmetic Dentistry</option>
+									<option value="restorative">Restorative Dentistry</option>
+									<option value="other">Other</option>
+								</select>
+							</div>
+							<div class="form-group">
+								<label for="message">Additional Information</label>
+								<textarea
+									id="message"
+									placeholder="Tell us about your dental needs or any specific concerns"
+								></textarea>
+							</div>
+							<button type="submit" class="btn btn-primary">Request Appointment</button>
+						</form>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- Footer -->
+		<footer>
+			<div class="container">
+				<div class="footer-grid">
+					<div class="footer-column">
+						<h3>Bright Smile Clinic</h3>
+						<p>
+							Providing quality dental care for your entire family in a comfortable, modern
+							environment.
+						</p>
+						<div class="social-links">
+							<a href="#" aria-label="Facebook">
+								<svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+									<path
+										d="M12 2C6.5 2 2 6.5 2 12c0 5 3.7 9.1 8.4 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.5h-1.3c-1.2 0-1.6.8-1.6 1.6V12h2.8l-.4 2.9h-2.3v7C18.3 21.1 22 17 22 12c0-5.5-4.5-10-10-10z"
+									/>
+								</svg>
+							</a>
+							<a href="#" aria-label="Twitter">
+								<svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+									<path
+										d="M22.46 6c-.77.35-1.6.58-2.46.69.88-.53 1.56-1.37 1.88-2.38-.83.5-1.75.85-2.72 1.05C18.37 4.5 17.26 4 16 4c-2.35 0-4.27 1.92-4.27 4.29 0 .34.04.67.11.98C8.28 9.09 5.11 7.38 3 4.79c-.37.63-.58 1.37-.58 2.15 0 1.49.75 2.81 1.91 3.56-.71 0-1.37-.2-1.95-.5v.03c0 2.08 1.48 3.82 3.44 4.21a4.22 4.22 0 0 1-1.93.07 4.28 4.28 0 0 0 4 2.98 8.521 8.521 0 0 1-5.33 1.84c-.34 0-.68-.02-1.02-.06C3.44 20.29 5.7 21 8.12 21 16 21 20.33 14.46 20.33 8.79c0-.19 0-.37-.01-.56.84-.6 1.56-1.36 2.14-2.23z"
+									/>
+								</svg>
+							</a>
+							<a href="#" aria-label="Instagram">
+								<svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+									<path
+										d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"
+									/>
+									849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069
+									4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059
+									1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98
+									6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2
+									6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948
+									0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0
+									5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759
+									6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209
+									1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441
+									1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+								</svg></a
+							>
+						</div>
+					</div>
+				</div>
+			</div>
+		</footer>
+		<script src="http://localhost:5173/embed.js?assistantId=789"></script>
 	</body>
 </html>
