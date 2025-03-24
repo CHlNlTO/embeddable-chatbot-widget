@@ -50,5 +50,8 @@
 		"onlyBuiltDependencies": [
 			"esbuild"
 		]
+	},
+	"dependencies": {
+		"svelte-awesome-color-picker": "^4.0.0"
 	}
 }
