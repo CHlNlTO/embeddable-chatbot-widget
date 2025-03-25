@@ -1,7 +1,6 @@
-<!-- src/lib/components/customization/CustomizationPanel.svelte -->
+<!-- CustomizationPanel.svelte -->
 <script lang="ts">
 	import { widgetConfig } from '$lib/stores/widgetConfig';
-	import ColorPicker from 'svelte-awesome-color-picker';
 
 	// Local state for form controls
 	let name = $widgetConfig.name;
@@ -90,44 +89,76 @@
 			<h3 class="mb-4 text-xs font-medium text-white">Theme Colors</h3>
 
 			<!-- Text Color -->
-			<div class="color-picker-container mb-5">
+			<div class="mb-5">
 				<label for="textColor" class="mb-2 block text-xs text-gray-300">Text Color</label>
-				<div class="flex items-center">
-					<div class="flex-1 text-black">
-						<ColorPicker name="textColor" textInputModes={['hex']} bind:hex={textColor} />
-					</div>
+				<div class="flex items-center gap-2">
+					<input
+						type="color"
+						id="textColor"
+						bind:value={textColor}
+						class="h-8 w-8 rounded border-0 p-0"
+					/>
+					<input
+						type="text"
+						bind:value={textColor}
+						class="bg-dark-tertiary border-cornflower-blue/20 focus:ring-cornflower-blue flex-1 rounded border p-2 text-xs text-white focus:ring-1 focus:outline-none"
+					/>
 				</div>
 			</div>
 
 			<!-- Primary Color -->
-			<div class="color-picker-container mb-5">
+			<div class="mb-5">
 				<label for="primaryColor" class="mb-2 block text-xs text-gray-300">Primary Color</label>
-				<div class="flex items-center">
-					<div class="flex-1 text-black">
-						<ColorPicker textInputModes={['hex']} bind:hex={primaryColor} />
-					</div>
+				<div class="flex items-center gap-2">
+					<input
+						type="color"
+						id="primaryColor"
+						bind:value={primaryColor}
+						class="h-8 w-8 rounded border-0 p-0"
+					/>
+					<input
+						type="text"
+						bind:value={primaryColor}
+						class="bg-dark-tertiary border-cornflower-blue/20 focus:ring-cornflower-blue flex-1 rounded border p-2 text-xs text-white focus:ring-1 focus:outline-none"
+					/>
 				</div>
 			</div>
 
 			<!-- Secondary Color -->
-			<div class="color-picker-container mb-5">
+			<div class="mb-5">
 				<label for="secondaryColor" class="mb-2 block text-xs text-gray-300">Secondary Color</label>
-				<div class="flex items-center">
-					<div class="flex-1 text-black">
-						<ColorPicker textInputModes={['hex']} bind:hex={secondaryColor} />
-					</div>
+				<div class="flex items-center gap-2">
+					<input
+						type="color"
+						id="secondaryColor"
+						bind:value={secondaryColor}
+						class="h-8 w-8 rounded border-0 p-0"
+					/>
+					<input
+						type="text"
+						bind:value={secondaryColor}
+						class="bg-dark-tertiary border-cornflower-blue/20 focus:ring-cornflower-blue flex-1 rounded border p-2 text-xs text-white focus:ring-1 focus:outline-none"
+					/>
 				</div>
 			</div>
 
 			<!-- Background Color -->
-			<div class="color-picker-container mb-5">
+			<div class="mb-5">
 				<label for="backgroundColor" class="mb-2 block text-xs text-gray-300"
 					>Background Color</label
 				>
-				<div class="flex items-center">
-					<div class="flex-1 text-black">
-						<ColorPicker textInputModes={['hex']} bind:hex={backgroundColor} />
-					</div>
+				<div class="flex items-center gap-2">
+					<input
+						type="color"
+						id="backgroundColor"
+						bind:value={backgroundColor}
+						class="h-8 w-8 rounded border-0 p-0"
+					/>
+					<input
+						type="text"
+						bind:value={backgroundColor}
+						class="bg-dark-tertiary border-cornflower-blue/20 focus:ring-cornflower-blue flex-1 rounded border p-2 text-xs text-white focus:ring-1 focus:outline-none"
+					/>
 				</div>
 			</div>
 		</div>

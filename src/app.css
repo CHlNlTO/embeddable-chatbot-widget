@@ -9,13 +9,13 @@
 	--color-dental-blue: oklch(0.6 0.22 264.4);
 	--color-dental-darkblue: oklch(0.33 0.09 255.2);
 	--color-turquoise: oklch(0.83 0.14 197.5);
-	--color-cornflower-blue: oklch(0.63 0.19 262.3);
+	--color-cornflower-blue: rgb(83 123 234);
 	--color-lavender: oklch(0.61 0.22 276.2);
 	--color-indigo: oklch(0.42 0.24 278.5);
 	--color-purple: oklch(0.54 0.24 300.8);
 	--color-dark-primary: #111827;
 	--color-dark-secondary: oklch(0.25 0.03 256.1);
-	--color-dark-tertiary: oklch(0.28 0.05 260.4);
+	--color-dark-tertiary: #1c263f;
 	--color-dark-foreground: rgb(214, 214, 214);
 
 	/* Font Family */
@@ -50,6 +50,10 @@
 	.scrollbar {
 		scrollbar-width: thin;
 		scrollbar-color: #4b5563 transparent;
+	}
+
+	.scrollbar {
+		overflow: visible !important;
 	}
 
 	.scrollbar::-webkit-scrollbar {

@@ -4,6 +4,7 @@
 	import { page } from '$app/stores';
 	import { widgetConfig, loadConfig, saveConfig } from '$lib/stores/widgetConfig';
 	import CustomizationPanel from '$lib/components/customization/CustomizationPanel.svelte';
+	import MobileCustomizationPanel from '$lib/components/customization/MobileCustomizationPanel.svelte';
 
 	// State variables
 	let previewUrl = '';
@@ -13,9 +14,15 @@
 	let notificationVisible = false;
 	let notificationMessage = '';
 	let notificationIsError = false;
+	let isMobile = false;
 
 	// Form validation
 	let urlError = '';
+
+	// Check viewport size
+	function checkViewport() {
+		isMobile = window.innerWidth < 768;
+	}
 
 	// When the component mounts, check for assistantId in query params
 	onMount(() => {
@@ -23,6 +30,16 @@
 		if (assistantId) {
 			loadConfig(assistantId);
 		}
+
+		// Initialize viewport check
+		checkViewport();
+
+		// Add resize listener
+		window.addEventListener('resize', checkViewport);
+
+		return () => {
+			window.removeEventListener('resize', checkViewport);
+		};
 	});
 
 	// Function to validate URL
@@ -117,70 +134,77 @@
 			z-index: 9999 !important;
 			position: relative;
 		}
+
+		/* Mobile specific styles */
+		@media (max-width: 767px) {
+			body {
+				overflow-x: hidden;
+			}
+		}
 	</style>
 </svelte:head>
 
 <div
 	class="from-dark-primary via-dark-tertiary to-dark-primary flex h-screen w-full overflow-hidden bg-gradient-to-br"
 >
-	<!-- Sidebar - Takes full height -->
-	<aside class="bg-dark-primary border-cornflower-blue/20 flex h-full w-64 flex-col border-r">
-		<div class="border-cornflower-blue/20 border-b p-4">
-			<div class="flex items-center gap-2">
-				<img src="/dentalflo-logo.png" alt="Dentalflo AI" class="mr-0 h-8 w-auto" />
-				<h1 class="text-xl font-bold text-white">Dentalflo AI</h1>
+	<!-- Sidebar - Desktop only -->
+	{#if !isMobile}
+		<aside class="bg-dark-primary border-cornflower-blue/20 flex h-full w-64 flex-col border-r">
+			<div class="border-cornflower-blue/20 border-b p-4">
+				<div class="flex items-center gap-2">
+					<img src="/dentalflo-logo.png" alt="Dentalflo AI" class="mr-0 h-8 w-auto" />
+					<h1 class="text-xl font-bold text-white">Dentalflo AI</h1>
+				</div>
 			</div>
-		</div>
 
-		<!-- Customization Panel -->
-		<div class="scrollbar flex-1 overflow-hidden">
-			<CustomizationPanel />
-		</div>
-
-		<!-- Footer Actions -->
-		<div class="border-cornflower-blue/20 bg-dark-primary border-t p-4">
-			<div class="flex w-full flex-col space-y-3">
-				<button
-					on:click={copyEmbedScript}
-					class="bg-dark-tertiary hover:bg-opacity-80 w-full rounded-lg px-4 py-2 text-xs font-medium transition-colors"
-				>
-					Copy Script
-				</button>
-				<button
-					on:click={saveConfiguration}
-					class="bg-cornflower-blue hover:bg-opacity-90 w-full rounded-lg px-4 py-2 text-xs font-medium transition-colors"
-				>
-					Save
-				</button>
+			<!-- Desktop Customization Panel -->
+			<div class="scrollbar flex-1 overflow-hidden">
+				<CustomizationPanel />
 			</div>
-		</div>
-	</aside>
+		</aside>
+	{/if}
 
 	<!-- Main Content Area -->
 	<div
 		class="from-dark-primary via-dark-tertiary to-dark-primary flex h-full flex-1 flex-col bg-gradient-to-br p-4 lg:p-6"
 	>
-		<div class="mx-auto flex h-full w-full max-w-7xl flex-col space-y-4">
+		<div class="mx-auto flex h-full w-full max-w-7xl flex-col space-y-6">
 			<!-- Header -->
 			<header class="border-cornflower-blue/20 bg-transparent">
-				<div class="container">
-					<h2 class="text-2xl font-semibold text-white">Widget Customization</h2>
+				<div class="container flex flex-wrap items-center justify-between gap-3">
+					<h2 class="text-xl font-semibold text-white md:text-2xl">Widget Customization</h2>
+
+					<!-- Action buttons in header -->
+					<div class="flex gap-2">
+						<button
+							on:click={copyEmbedScript}
+							class="bg-dark-tertiary hover:bg-opacity-80 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors"
+						>
+							Copy Script
+						</button>
+						<button
+							on:click={saveConfiguration}
+							class="bg-cornflower-blue hover:bg-opacity-90 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors"
+						>
+							Save
+						</button>
+					</div>
 				</div>
 			</header>
 
 			<!-- Preview Section -->
-			<div class="flex flex-1 flex-col gap-4 overflow-hidden">
+			<div class={`flex flex-1 flex-col gap-4 overflow-hidden ${isMobile ? 'pb-0' : ''}`}>
 				<div class="bg-transparent">
-					<div class="flex">
+					<div class="flex gap-2">
 						<input
 							type="text"
 							bind:value={previewUrl}
 							placeholder="Enter website URL to preview"
-							class="border-cornflower-blue/20 focus:ring-cornflower-blue m-1 flex-1 rounded-lg border bg-transparent p-4 focus:ring-2 focus:outline-none"
+							class="border-cornflower-blue/20 focus:ring-cornflower-blue m-1 flex-1 rounded-lg border bg-transparent p-2 text-sm focus:ring-2 focus:outline-none md:p-4"
 						/>
 						<button
 							on:click={loadPreview}
-							class="bg-cornflower-blue hover:bg-opacity-90 border-cornflower-blue/20 m-1 rounded-lg border px-4 py-2 text-white transition-colors focus:ring-2 focus:ring-white focus:outline-none"
+							class="bg-cornflower-blue hover:bg-opacity-90 border-cornflower-blue/20 m-0.5 rounded-lg border px-3 py-1 text-white transition-colors focus:ring-2 focus:ring-white focus:outline-none md:px-4 md:py-2"
 						>
 							Load
 						</button>
@@ -191,7 +215,7 @@
 				</div>
 
 				<div class="border-cornflower-blue/20 relative flex-1 rounded-xl border bg-transparent">
-					<!-- This is the preview container that will hold both the iframe and the widget overlay -->
+					<!-- Preview container -->
 					<div class="relative h-full w-full">
 						{#if previewUrl && !urlError}
 							<iframe
@@ -238,8 +262,6 @@
 							<div
 								class="pointer-events-none absolute inset-0 mr-4 mb-4 flex items-end justify-end"
 							>
-								<!-- The iframe itself is pointer-events-none so clicks pass through to the website preview,
-							     but we enable pointer-events on the actual widget iframe so it can be interacted with -->
 								<iframe
 									src={`/widget?assistantId=${$widgetConfig.assistantId}&config=${encodeURIComponent(JSON.stringify($widgetConfig))}`}
 									title="Chatbot Widget Preview"
@@ -254,6 +276,13 @@
 		</div>
 	</div>
 
+	<!-- Mobile Customization Panel - Fixed at bottom for mobile -->
+	{#if isMobile}
+		<div class="fixed right-0 bottom-0 left-0 z-40">
+			<MobileCustomizationPanel />
+		</div>
+	{/if}
+
 	<!-- Notification -->
 	{#if notificationVisible}
 		<div
@@ -265,3 +294,13 @@
 		</div>
 	{/if}
 </div>
+
+<style>
+	/* Add any page-specific styles here */
+	@media (max-width: 767px) {
+		/* Ensure enough bottom spacing for the mobile panel */
+		:global(body) {
+			padding-bottom: 60px;
+		}
+	}
+</style>
