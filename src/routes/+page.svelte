@@ -56,7 +56,7 @@
 	</header>
 
 	<!-- Hero Section -->
-	<section class="bg-gradient-to-b from-[#92afff]/10 to-white pt-32 pb-16">
+	<section class="bg-gradient-to-b from-[#e6e2ff] to-white pt-32 pb-16">
 		<div class="container mx-auto px-4">
 			<div class="grid items-center gap-8 md:grid-cols-2">
 				<div>

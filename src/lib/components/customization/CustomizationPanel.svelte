@@ -93,10 +93,10 @@
 			<div class="color-picker-container mb-5">
 				<label class="mb-2 block text-xs text-gray-300">Text Color</label>
 				<div class="flex items-center">
-					<div
+					<!-- <div
 						class="border-cornflower-blue/20 mr-2 h-8 w-8 rounded border"
 						style="background-color: {textColor}"
-					></div>
+					></div> -->
 					<div class="flex-1">
 						<ColorPicker bind:hex={textColor} />
 					</div>
@@ -107,10 +107,10 @@
 			<div class="color-picker-container mb-5">
 				<label class="mb-2 block text-xs text-gray-300">Primary Color</label>
 				<div class="flex items-center">
-					<div
+					<!-- <div
 						class="border-cornflower-blue/20 mr-2 h-8 w-8 rounded border"
 						style="background-color: {primaryColor}"
-					></div>
+					></div> -->
 					<div class="flex-1">
 						<ColorPicker bind:hex={primaryColor} />
 					</div>
@@ -121,10 +121,10 @@
 			<div class="color-picker-container mb-5">
 				<label class="mb-2 block text-xs text-gray-300">Secondary Color</label>
 				<div class="flex items-center">
-					<div
+					<!-- <div
 						class="border-cornflower-blue/20 mr-2 h-8 w-8 rounded border"
 						style="background-color: {secondaryColor}"
-					></div>
+					></div> -->
 					<div class="flex-1">
 						<ColorPicker bind:hex={secondaryColor} />
 					</div>
@@ -133,12 +133,14 @@
 
 			<!-- Background Color -->
 			<div class="color-picker-container mb-5">
-				<label class="mb-2 block text-xs text-gray-300">Background Color</label>
+				<label for="backgroundColor" class="mb-2 block text-xs text-gray-300"
+					>Background Color</label
+				>
 				<div class="flex items-center">
-					<div
+					<!-- <div
 						class="border-cornflower-blue/20 mr-2 h-8 w-8 rounded border"
 						style="background-color: {backgroundColor}"
-					></div>
+					></div> -->
 					<div class="flex-1">
 						<ColorPicker bind:hex={backgroundColor} />
 					</div>

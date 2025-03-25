@@ -597,7 +597,7 @@
 				type="text"
 				bind:value={inputText}
 				placeholder="Type your message..."
-				class="flex-1 rounded-l-lg border p-2 focus:outline-none"
+				class="flex-1 rounded-l-lg border p-2 text-black focus:outline-none"
 				style="border-color: {config.theme.primaryColor};"
 				on:keydown={(e) => e.key === 'Enter' && sendMessage()}
 			/>

@@ -121,10 +121,10 @@
 </svelte:head>
 
 <div
-	class="bg-dark-primary from-dark-primary via-dark-tertiary to-dark-primary flex h-screen overflow-hidden bg-gradient-to-br"
+	class="from-dark-primary via-dark-tertiary to-dark-primary flex h-screen w-full overflow-hidden bg-gradient-to-br"
 >
 	<!-- Sidebar - Takes full height -->
-	<aside class="bg-primary border-cornflower-blue/20 flex h-full w-64 flex-col border-r">
+	<aside class="bg-dark-primary border-cornflower-blue/20 flex h-full w-64 flex-col border-r">
 		<div class="border-cornflower-blue/20 border-b p-4">
 			<div class="flex items-center gap-2">
 				<img src="/dentalflo-logo.png" alt="Dentalflo AI" class="mr-0 h-8 w-auto" />
@@ -142,13 +142,13 @@
 			<div class="flex w-full flex-col space-y-3">
 				<button
 					on:click={copyEmbedScript}
-					class="bg-dark-tertiary hover:bg-opacity-80 w-full rounded px-4 py-2 text-sm font-medium transition-colors"
+					class="bg-dark-tertiary hover:bg-opacity-80 w-full rounded-lg px-4 py-2 text-xs font-medium transition-colors"
 				>
 					Copy Script
 				</button>
 				<button
 					on:click={saveConfiguration}
-					class="bg-cornflower-blue hover:bg-opacity-90 w-full rounded px-4 py-2 text-sm font-medium transition-colors"
+					class="bg-cornflower-blue hover:bg-opacity-90 w-full rounded-lg px-4 py-2 text-xs font-medium transition-colors"
 				>
 					Save
 				</button>
@@ -158,92 +158,97 @@
 
 	<!-- Main Content Area -->
 	<div
-		class="from-dark-primary via-dark-tertiary to-dark-primary flex h-full flex-1 flex-col bg-gradient-to-br"
+		class="from-dark-primary via-dark-tertiary to-dark-primary flex h-full flex-1 flex-col bg-gradient-to-br p-4 lg:p-6"
 	>
-		<!-- Header -->
-		<header class="border-cornflower-blue/20 bg-dark-primary border-b p-4.5">
-			<div class="container">
-				<h2 class="text-xl font-semibold text-white">Widget Customization</h2>
-			</div>
-		</header>
-
-		<!-- Preview Section -->
-		<div class="flex flex-1 flex-col overflow-hidden">
-			<div class="bg-dark-tertiary border-cornflower-blue/20 border-b p-4">
-				<div class="flex">
-					<input
-						type="text"
-						bind:value={previewUrl}
-						placeholder="Enter website URL to preview"
-						class="bg-dark-primary border-cornflower-blue/20 focus:ring-cornflower-blue flex-1 rounded-l border p-2 focus:ring-2 focus:outline-none"
-					/>
-					<button
-						on:click={loadPreview}
-						class="bg-cornflower-blue hover:bg-opacity-90 rounded-r px-4 py-2 transition-colors"
-					>
-						Load
-					</button>
+		<div class="mx-auto flex h-full w-full max-w-7xl flex-col space-y-4">
+			<!-- Header -->
+			<header class="border-cornflower-blue/20 bg-transparent">
+				<div class="container">
+					<h2 class="text-2xl font-semibold text-white">Widget Customization</h2>
 				</div>
-				{#if urlError}
-					<p class="mt-1 text-sm text-red-400">{urlError}</p>
-				{/if}
-			</div>
+			</header>
 
-			<div class="bg-dark-primary relative m-10 flex-1">
-				<!-- This is the preview container that will hold both the iframe and the widget overlay -->
-				<div class="relative h-full w-full">
-					{#if previewUrl && !urlError}
-						<iframe
-							bind:this={iframeElement}
-							src={previewUrl}
-							title="Website Preview"
-							class="h-full w-full border-0"
-							on:load={handleIframeLoad}
-							on:error={handleIframeError}
-							sandbox="allow-same-origin allow-scripts allow-forms"
-						></iframe>
+			<!-- Preview Section -->
+			<div class="flex flex-1 flex-col gap-4 overflow-hidden">
+				<div class="bg-transparent">
+					<div class="flex">
+						<input
+							type="text"
+							bind:value={previewUrl}
+							placeholder="Enter website URL to preview"
+							class="border-cornflower-blue/20 focus:ring-cornflower-blue m-1 flex-1 rounded-l-lg border bg-transparent p-4 focus:ring-2 focus:outline-none"
+						/>
+						<button
+							on:click={loadPreview}
+							class="bg-cornflower-blue hover:bg-opacity-90 border-cornflower-blue/20 m-1 rounded-r border px-4 py-2 text-white transition-colors focus:ring-2 focus:ring-white focus:outline-none"
+						>
+							Load
+						</button>
+					</div>
+					{#if urlError}
+						<p class="mt-1 text-sm text-red-400">{urlError}</p>
+					{/if}
+				</div>
 
-						{#if iframeError}
-							<div
-								class="bg-dark-primary bg-opacity-80 absolute inset-0 flex items-center justify-center"
-							>
+				<div class="border-cornflower-blue/20 relative flex-1 rounded-xl border bg-transparent">
+					<!-- This is the preview container that will hold both the iframe and the widget overlay -->
+					<div class="relative h-full w-full">
+						{#if previewUrl && !urlError}
+							<iframe
+								bind:this={iframeElement}
+								src={previewUrl}
+								title="Website Preview"
+								class="h-full w-full rounded-xl border-0"
+								on:load={handleIframeLoad}
+								on:error={handleIframeError}
+								sandbox="allow-same-origin allow-scripts allow-forms"
+							></iframe>
+
+							{#if iframeError}
+								<div
+									class="bg-dark-primary bg-opacity-80 absolute inset-0 flex items-center justify-center"
+								>
+									<div
+										class="bg-dark-tertiary border-cornflower-blue/20 max-w-md rounded-lg border p-6 text-center"
+									>
+										<h3 class="mb-4 text-xl font-bold text-white">Unable to load website</h3>
+										<p class="mb-4 text-gray-300">
+											The website may have content security policies that prevent it from being
+											displayed in an iframe.
+										</p>
+									</div>
+								</div>
+							{/if}
+						{:else}
+							<div class="absolute inset-0 flex items-center justify-center">
 								<div
 									class="bg-dark-tertiary border-cornflower-blue/20 max-w-md rounded-lg border p-6 text-center"
 								>
-									<h3 class="mb-4 text-xl font-bold text-white">Unable to load website</h3>
+									<h3 class="mb-4 text-xl font-bold text-white">Enter a website URL</h3>
 									<p class="mb-4 text-gray-300">
-										The website may have content security policies that prevent it from being
-										displayed in an iframe.
+										Enter your clinic&apos;s website URL and Assistant ID to preview your site and
+										chat widget.
 									</p>
 								</div>
 							</div>
 						{/if}
-					{:else}
-						<div class="absolute inset-0 flex items-center justify-center">
-							<div
-								class="bg-dark-tertiary border-cornflower-blue/20 max-w-md rounded-lg border p-6 text-center"
-							>
-								<h3 class="mb-4 text-xl font-bold text-white">Enter a website URL</h3>
-								<p class="mb-4 text-gray-300">
-									Enter a URL in the field above to preview your website with the chat widget.
-								</p>
-							</div>
-						</div>
-					{/if}
 
-					<!-- Widget Overlay - Always visible on top of the iframe -->
-					{#if $widgetConfig.assistantId}
-						<div class="pointer-events-none absolute inset-0">
-							<!-- The iframe itself is pointer-events-none so clicks pass through to the website preview,
+						<!-- Widget Overlay - Always visible on top of the iframe -->
+						{#if $widgetConfig.assistantId}
+							<div
+								class="pointer-events-none absolute inset-0 mr-4 mb-4 flex items-end justify-end"
+							>
+								<!-- The iframe itself is pointer-events-none so clicks pass through to the website preview,
 							     but we enable pointer-events on the actual widget iframe so it can be interacted with -->
-							<iframe
-								src={`/widget?assistantId=${$widgetConfig.assistantId}&config=${encodeURIComponent(JSON.stringify($widgetConfig))}`}
-								title="Chatbot Widget Preview"
-								class="pointer-events-auto h-full w-full border-0"
-								style="background: transparent;"
-							></iframe>
-						</div>
-					{/if}
+								<iframe
+									src={`/widget?assistantId=${$widgetConfig.assistantId}&config=${encodeURIComponent(JSON.stringify($widgetConfig))}`}
+									title="Chatbot Widget Preview"
+									class="pointer-events-auto bottom-0 h-[450px] w-[320px] border-0"
+									style="background: transparent;"
+								></iframe>
+							</div>
+						{/if}
+					</div>
 				</div>
 			</div>
 		</div>

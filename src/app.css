@@ -13,10 +13,10 @@
 	--color-lavender: oklch(0.61 0.22 276.2);
 	--color-indigo: oklch(0.42 0.24 278.5);
 	--color-purple: oklch(0.54 0.24 300.8);
-	--color-dark-primary: oklch(0.2 0.02 264.3);
+	--color-dark-primary: #111827;
 	--color-dark-secondary: oklch(0.25 0.03 256.1);
 	--color-dark-tertiary: oklch(0.28 0.05 260.4);
-	--color-dark-foreground: oklch(0.85 0.005 240);
+	--color-dark-foreground: rgb(214, 214, 214);
 
 	/* Font Family */
 	--font-sans:
