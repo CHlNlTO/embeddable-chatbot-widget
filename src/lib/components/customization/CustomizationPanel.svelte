@@ -31,7 +31,7 @@
 	}
 </script>
 
-<div class="bg-dark-primary h-screen space-y-6 overflow-y-auto p-6">
+<div class="bg-dark-primary scrollbar h-full space-y-6 overflow-y-auto p-6">
 	<div class="space-y-6">
 		<!-- Assistant ID -->
 		<div>
@@ -41,7 +41,7 @@
 				type="text"
 				id="assistantId"
 				bind:value={assistantId}
-				placeholder="Enter Assistant ID"
+				placeholder="Enter Assistant ID to preview"
 				class="bg-dark-tertiary border-cornflower-blue/20 focus:ring-cornflower-blue w-full rounded border p-2 text-xs text-white focus:ring-1 focus:outline-none"
 			/>
 		</div>
@@ -91,42 +91,30 @@
 
 			<!-- Text Color -->
 			<div class="color-picker-container mb-5">
-				<label class="mb-2 block text-xs text-gray-300">Text Color</label>
+				<label for="textColor" class="mb-2 block text-xs text-gray-300">Text Color</label>
 				<div class="flex items-center">
-					<!-- <div
-						class="border-cornflower-blue/20 mr-2 h-8 w-8 rounded border"
-						style="background-color: {textColor}"
-					></div> -->
-					<div class="flex-1">
-						<ColorPicker bind:hex={textColor} />
+					<div class="flex-1 text-black">
+						<ColorPicker name="textColor" textInputModes={['hex']} bind:hex={textColor} />
 					</div>
 				</div>
 			</div>
 
 			<!-- Primary Color -->
 			<div class="color-picker-container mb-5">
-				<label class="mb-2 block text-xs text-gray-300">Primary Color</label>
+				<label for="primaryColor" class="mb-2 block text-xs text-gray-300">Primary Color</label>
 				<div class="flex items-center">
-					<!-- <div
-						class="border-cornflower-blue/20 mr-2 h-8 w-8 rounded border"
-						style="background-color: {primaryColor}"
-					></div> -->
-					<div class="flex-1">
-						<ColorPicker bind:hex={primaryColor} />
+					<div class="flex-1 text-black">
+						<ColorPicker textInputModes={['hex']} bind:hex={primaryColor} />
 					</div>
 				</div>
 			</div>
 
 			<!-- Secondary Color -->
 			<div class="color-picker-container mb-5">
-				<label class="mb-2 block text-xs text-gray-300">Secondary Color</label>
+				<label for="secondaryColor" class="mb-2 block text-xs text-gray-300">Secondary Color</label>
 				<div class="flex items-center">
-					<!-- <div
-						class="border-cornflower-blue/20 mr-2 h-8 w-8 rounded border"
-						style="background-color: {secondaryColor}"
-					></div> -->
-					<div class="flex-1">
-						<ColorPicker bind:hex={secondaryColor} />
+					<div class="flex-1 text-black">
+						<ColorPicker textInputModes={['hex']} bind:hex={secondaryColor} />
 					</div>
 				</div>
 			</div>
@@ -137,12 +125,8 @@
 					>Background Color</label
 				>
 				<div class="flex items-center">
-					<!-- <div
-						class="border-cornflower-blue/20 mr-2 h-8 w-8 rounded border"
-						style="background-color: {backgroundColor}"
-					></div> -->
-					<div class="flex-1">
-						<ColorPicker bind:hex={backgroundColor} />
+					<div class="flex-1 text-black">
+						<ColorPicker textInputModes={['hex']} bind:hex={backgroundColor} />
 					</div>
 				</div>
 			</div>

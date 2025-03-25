@@ -126,6 +126,7 @@ body {
 /* For the color picker component text, we specify the parent class and its children to style the label and input elements. We also define the font size for the label element  */
 .color-picker label {
 	font-size: 12px;
+	color: #ffffff;
 }
 
 /* Fix for color picker z-index issues */

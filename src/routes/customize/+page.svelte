@@ -133,7 +133,7 @@
 		</div>
 
 		<!-- Customization Panel -->
-		<div class="scrollbar flex-1 overflow-y-auto">
+		<div class="scrollbar flex-1 overflow-hidden">
 			<CustomizationPanel />
 		</div>
 
@@ -176,11 +176,11 @@
 							type="text"
 							bind:value={previewUrl}
 							placeholder="Enter website URL to preview"
-							class="border-cornflower-blue/20 focus:ring-cornflower-blue m-1 flex-1 rounded-l-lg border bg-transparent p-4 focus:ring-2 focus:outline-none"
+							class="border-cornflower-blue/20 focus:ring-cornflower-blue m-1 flex-1 rounded-lg border bg-transparent p-4 focus:ring-2 focus:outline-none"
 						/>
 						<button
 							on:click={loadPreview}
-							class="bg-cornflower-blue hover:bg-opacity-90 border-cornflower-blue/20 m-1 rounded-r border px-4 py-2 text-white transition-colors focus:ring-2 focus:ring-white focus:outline-none"
+							class="bg-cornflower-blue hover:bg-opacity-90 border-cornflower-blue/20 m-1 rounded-lg border px-4 py-2 text-white transition-colors focus:ring-2 focus:ring-white focus:outline-none"
 						>
 							Load
 						</button>
