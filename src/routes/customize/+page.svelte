@@ -5,6 +5,7 @@
 	import { widgetConfig, loadConfig, saveConfig } from '$lib/stores/widgetConfig';
 	import CustomizationPanel from '$lib/components/customization/CustomizationPanel.svelte';
 	import MobileCustomizationPanel from '$lib/components/customization/MobileCustomizationPanel.svelte';
+	import ChatbotWidget from '$lib/components/ChatbotWidget.svelte';
 
 	// State variables
 	let previewUrl = '';
@@ -123,7 +124,6 @@
 
 <svelte:head>
 	<style>
-		/* Ensure color picker shows above all other elements */
 		.color-picker {
 			position: relative;
 		}
@@ -135,7 +135,6 @@
 			position: relative;
 		}
 
-		/* Mobile specific styles */
 		@media (max-width: 767px) {
 			body {
 				overflow-x: hidden;
@@ -257,17 +256,17 @@
 							</div>
 						{/if}
 
-						<!-- Widget Overlay - Always visible on top of the iframe -->
+						<!-- Direct ChatbotWidget component instead of iframe -->
 						{#if $widgetConfig.assistantId}
 							<div
 								class="pointer-events-none absolute inset-0 mr-4 mb-4 flex items-end justify-end"
 							>
-								<iframe
-									src={`/widget?assistantId=${$widgetConfig.assistantId}&config=${encodeURIComponent(JSON.stringify($widgetConfig))}`}
-									title="Chatbot Widget Preview"
-									class="pointer-events-auto bottom-0 h-[450px] w-[320px] border-0"
+								<div
+									class="pointer-events-auto h-[450px] w-[320px]"
 									style="background: transparent;"
-								></iframe>
+								>
+									<ChatbotWidget assistantId={$widgetConfig.assistantId} config={$widgetConfig} />
+								</div>
 							</div>
 						{/if}
 					</div>
@@ -276,9 +275,9 @@
 		</div>
 	</div>
 
-	<!-- Mobile Customization Panel - Fixed at bottom for mobile -->
+	<!-- Mobile Customization Panel -->
 	{#if isMobile}
-		<div class="fixed right-0 bottom-0 left-0 z-40">
+		<div class="fixed right-0 bottom-0 left-0 z-[9999]">
 			<MobileCustomizationPanel />
 		</div>
 	{/if}

@@ -66,6 +66,7 @@
 	let inputText = ''; // Current text in the input field
 	let isLoading = false; // Whether the widget is currently processing a request
 	let sessionToken: string | null = null; // Authentication token for the current session
+	let initialMessageId: string | null = null; // Track the ID of the initial greeting message
 
 	/**
 	 * Helper Functions
@@ -216,6 +217,7 @@
 
 			// Always create the initial greeting message
 			const initialGreetingMsg = getInitialGreeting();
+			initialMessageId = initialGreetingMsg.id; // Store the ID for future updates
 
 			// Process message history from the API
 			if (data.messages?.length > 0) {
@@ -238,6 +240,11 @@
 				) {
 					// Greeting already exists, use history as is
 					messages = historyMessages;
+
+					// Store the ID of the first message as our initial greeting message
+					if (historyMessages.length > 0) {
+						initialMessageId = historyMessages[0].id;
+					}
 				} else {
 					// Add greeting as first message, followed by history
 					// This ensures the AI always appears to initiate the conversation
@@ -395,6 +402,25 @@
 			}
 		} catch (error) {
 			console.error('Error fetching widget config:', error);
+		}
+	}
+
+	/**
+	 * NEW: Watch for changes to initialGreeting and update the first message
+	 */
+	$: if (initialMessageId && messages.length > 0 && config.initialGreeting) {
+		// Find the message with the stored initialMessageId
+		const index = messages.findIndex((msg) => msg.id === initialMessageId);
+
+		// If found and content is different, update it
+		if (index !== -1 && messages[index].content !== config.initialGreeting) {
+			// Create a new array with the updated message
+			const updatedMessages = [...messages];
+			updatedMessages[index] = {
+				...updatedMessages[index],
+				content: config.initialGreeting
+			};
+			messages = updatedMessages;
 		}
 	}
 

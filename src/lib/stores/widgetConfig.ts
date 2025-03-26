@@ -38,7 +38,6 @@ export function loadConfig(assistantId: string): void {
 	try {
 		const storedConfig = localStorage.getItem(`widget-config-${assistantId}`);
 		if (storedConfig) {
-			console.log('hATDOG', storedConfig);
 			const config = JSON.parse(storedConfig) as WidgetConfig;
 			widgetConfig.set(config);
 		} else {

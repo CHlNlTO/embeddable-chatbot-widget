@@ -249,7 +249,7 @@
 							backgroundColor = e.currentTarget.value;
 					}}
 					class="color-input"
-					style="width: 50%"
+					style="width: 20%"
 				/>
 
 				<input
