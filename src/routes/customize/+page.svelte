@@ -157,7 +157,7 @@
 			</div>
 
 			<!-- Desktop Customization Panel -->
-			<div class="scrollbar flex-1 overflow-hidden">
+			<div class="scrollbar h-screen flex-1 overflow-y-auto">
 				<CustomizationPanel />
 			</div>
 		</aside>
@@ -169,21 +169,21 @@
 	>
 		<div class="mx-auto flex h-full w-full max-w-7xl flex-col space-y-6">
 			<!-- Header -->
-			<header class="border-cornflower-blue/20 bg-transparent">
-				<div class="container flex flex-wrap items-center justify-between gap-3">
+			<header class="border-cornflower-blue/20 w-full bg-transparent">
+				<div class=" flex w-full items-center justify-between gap-3">
 					<h2 class="text-xl font-semibold text-white md:text-2xl">Widget Customization</h2>
 
 					<!-- Action buttons in header -->
 					<div class="flex gap-2">
 						<button
 							on:click={copyEmbedScript}
-							class="bg-dark-tertiary hover:bg-opacity-80 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors"
+							class="bg-dark-primary/80 hover:bg-opacity-80 rounded px-3 py-1 text-sm font-medium text-white shadow-xl transition-colors"
 						>
 							Copy Script
 						</button>
 						<button
 							on:click={saveConfiguration}
-							class="bg-cornflower-blue hover:bg-opacity-90 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors"
+							class="bg-cornflower-blue hover:bg-opacity-90 rounded px-3 py-1.5 text-sm font-medium text-white shadow-xl transition-colors"
 						>
 							Save
 						</button>
@@ -194,16 +194,16 @@
 			<!-- Preview Section -->
 			<div class={`flex flex-1 flex-col gap-4 overflow-hidden ${isMobile ? 'pb-0' : ''}`}>
 				<div class="bg-transparent">
-					<div class="flex gap-2">
+					<div class="flex gap-2 p-1">
 						<input
 							type="text"
 							bind:value={previewUrl}
 							placeholder="Enter website URL to preview"
-							class="border-cornflower-blue/20 focus:ring-cornflower-blue m-1 flex-1 rounded-lg border bg-transparent p-2 text-sm focus:ring-2 focus:outline-none md:p-4"
+							class="bg-dark-tertiary border-cornflower-blue/20 focus:ring-cornflower-blue w-full rounded border p-2 text-sm text-white focus:ring-[0.5px] focus:outline-none"
 						/>
 						<button
 							on:click={loadPreview}
-							class="bg-cornflower-blue hover:bg-opacity-90 border-cornflower-blue/20 m-0.5 rounded-lg border px-3 py-1 text-white transition-colors focus:ring-2 focus:ring-white focus:outline-none md:px-4 md:py-2"
+							class="bg-cornflower-blue hover:bg-opacity-90 rounded px-3 py-1.5 text-sm font-medium text-white shadow-xl transition-colors"
 						>
 							Load
 						</button>
@@ -213,7 +213,7 @@
 					{/if}
 				</div>
 
-				<div class="border-cornflower-blue/20 relative flex-1 rounded-xl border bg-transparent">
+				<div class="border-cornflower-blue/20 relative m-1 flex-1 rounded-xl border bg-transparent">
 					<!-- Preview container -->
 					<div class="relative h-full w-full">
 						{#if previewUrl && !urlError}

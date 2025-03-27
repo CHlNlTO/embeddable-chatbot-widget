@@ -132,20 +132,25 @@
 </script>
 
 <!-- Horizontal scrolling options -->
-<div class="options-container">
-	<div class="options-scroll">
+<div
+	class="bg-dark-primary border-opacity-20 border-cornflower-blue/20 relative z-40 w-full overflow-hidden border-t py-6"
+>
+	<div class="scrollbar-none scroll-snap-x scroll-snap-mandatory flex gap-2 overflow-x-auto px-4">
 		{#each options as option}
 			<button
 				id={`option-${option.id}`}
-				class="option-button"
-				class:active={activeField === option.id || activeColorPicker === option.id}
+				class="bg-dark-tertiary scroll-snap-center flex flex-none items-center gap-2 rounded-full px-4 py-2 text-sm whitespace-nowrap text-white transition-all duration-200 ease-out"
+				class:bg-cornflower-blue={activeField === option.id || activeColorPicker === option.id}
+				class:font-medium={activeField === option.id || activeColorPicker === option.id}
+				class:scale-105={activeField === option.id || activeColorPicker === option.id}
+				class:shadow-md={activeField === option.id || activeColorPicker === option.id}
 				on:click={() =>
 					option.type === 'color' ? openColorPicker(option.id) : toggleField(option.id)}
 			>
 				<!-- Color preview for color options -->
 				{#if option.type === 'color'}
 					<span
-						class="color-preview"
+						class="border-opacity-30 inline-block h-4 w-4 rounded-full border border-white"
 						style="background-color: {option.id === 'textColor'
 							? textColor
 							: option.id === 'primaryColor'
@@ -164,40 +169,66 @@
 
 <!-- Input panel that slides up (only for non-color options) -->
 {#if activeField}
-	<div class="input-panel" transition:slide={{ duration: 300, easing: quintOut }}>
+	<div
+		class="bg-dark-tertiary border-opacity-20 border-cornflower-blue fixed right-0 bottom-14 left-0 z-50 rounded-t-xl border-t p-4 shadow-lg"
+		transition:slide={{ duration: 300, easing: quintOut }}
+	>
 		{#if activeField === 'assistantId'}
-			<div class="field-container">
-				<label for="assistantId">Assistant ID</label>
+			<div class="mb-2">
+				<label for="assistantId" class="mb-2 block text-sm font-medium text-white"
+					>Assistant ID</label
+				>
 				<input
 					type="text"
 					id="assistantId"
 					bind:value={assistantId}
 					placeholder="Enter Assistant ID"
+					class="bg-opacity-20 border-opacity-30 border-cornflower-blue focus:border-cornflower-blue bg-dark-tertiary w-full rounded-md border px-2.5 py-2.5 text-white focus:outline-none"
 				/>
 			</div>
 		{:else if activeField === 'name'}
-			<div class="field-container">
-				<label for="clinicName">Clinic Name</label>
-				<input type="text" id="clinicName" bind:value={name} placeholder="Enter Clinic Name" />
+			<div class="mb-2">
+				<label for="clinicName" class="mb-2 block text-sm font-medium text-white">Clinic Name</label
+				>
+				<input
+					type="text"
+					id="clinicName"
+					bind:value={name}
+					placeholder="Enter Clinic Name"
+					class="bg-opacity-20 border-opacity-30 border-cornflower-blue focus:border-cornflower-blue bg-dark-tertiary w-full rounded-md border px-2.5 py-2.5 text-white focus:outline-none"
+				/>
 			</div>
 		{:else if activeField === 'initialGreeting'}
-			<div class="field-container">
-				<label for="greeting">Initial Greeting</label>
+			<div class="mb-2">
+				<label for="greeting" class="mb-2 block text-sm font-medium text-white"
+					>Initial Greeting</label
+				>
 				<textarea
 					id="greeting"
 					bind:value={initialGreeting}
 					placeholder="Enter greeting message"
 					rows="3"
+					class="bg-opacity-20 border-opacity-30 border-cornflower-blue focus:border-cornflower-blue bg-dark-tertiary w-full rounded-md border px-2.5 py-2.5 text-white focus:outline-none"
 				></textarea>
 			</div>
 		{:else if activeField === 'imageUrl'}
-			<div class="field-container">
-				<label for="logoUrl">Logo URL</label>
-				<input type="text" id="logoUrl" bind:value={imageUrl} placeholder="Enter Logo URL" />
+			<div class="mb-2">
+				<label for="logoUrl" class="mb-2 block text-sm font-medium text-white">Logo URL</label>
+				<input
+					type="text"
+					id="logoUrl"
+					bind:value={imageUrl}
+					placeholder="Enter Logo URL"
+					class="bg-opacity-20 border-opacity-30 border-cornflower-blue focus:border-cornflower-blue bg-dark-tertiary w-full rounded-md border px-2.5 py-2.5 text-white focus:outline-none"
+				/>
 			</div>
 		{/if}
 
-		<button class="close-button" on:click={() => (activeField = null)} aria-label="Close panel">
+		<button
+			class="bg-opacity-20 bg-dark-tertiary absolute top-3 right-3 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full border-0 text-white"
+			on:click={() => (activeField = null)}
+			aria-label="Close panel"
+		>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
 				width="24"
@@ -208,6 +239,7 @@
 				stroke-width="2"
 				stroke-linecap="round"
 				stroke-linejoin="round"
+				class="h-4 w-4"
 			>
 				<line x1="18" y1="6" x2="6" y2="18"></line>
 				<line x1="6" y1="6" x2="18" y2="18"></line>
@@ -218,9 +250,12 @@
 
 <!-- Color picker panel -->
 {#if isColorPickerOpen && activeColorPicker}
-	<div class="color-picker-panel" transition:slide={{ duration: 300, easing: quintOut }}>
-		<div class="field-container">
-			<label for="colorValue">
+	<div
+		class="bg-dark-tertiary border-opacity-20 border-cornflower-blue fixed right-0 bottom-14 left-0 z-50 rounded-t-xl border-t p-4 shadow-lg"
+		transition:slide={{ duration: 300, easing: quintOut }}
+	>
+		<div class="mb-2">
+			<label for="colorValue" class="mb-2 block text-sm font-medium text-white">
 				{activeColorPicker === 'textColor'
 					? 'Text Color'
 					: activeColorPicker === 'primaryColor'
@@ -230,7 +265,7 @@
 							: 'Background Color'}
 			</label>
 
-			<div class="color-picker-controls">
+			<div class="flex items-center gap-2.5">
 				<input
 					type="color"
 					id="colorValue"
@@ -248,8 +283,7 @@
 						else if (activeColorPicker === 'backgroundColor')
 							backgroundColor = e.currentTarget.value;
 					}}
-					class="color-input"
-					style="width: 20%"
+					class="h-10 w-[60px] cursor-pointer rounded-md border-0 bg-transparent p-0"
 				/>
 
 				<input
@@ -268,13 +302,17 @@
 						else if (activeColorPicker === 'backgroundColor')
 							backgroundColor = e.currentTarget.value;
 					}}
-					class="text-input"
+					class="bg-opacity-20 border-opacity-30 border-cornflower-blue focus:border-cornflower-blue bg-dark-tertiary flex-1 rounded-md border px-2.5 py-2.5 text-white focus:outline-none"
 					placeholder="#RRGGBB"
 				/>
 			</div>
 		</div>
 
-		<button class="close-button" on:click={hideColorPickers} aria-label="Close color picker">
+		<button
+			class="bg-opacity-20 bg-dark-tertiary absolute top-3 right-3 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full border-0 text-white"
+			on:click={hideColorPickers}
+			aria-label="Close color picker"
+		>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
 				width="24"
@@ -285,6 +323,7 @@
 				stroke-width="2"
 				stroke-linecap="round"
 				stroke-linejoin="round"
+				class="h-4 w-4"
 			>
 				<line x1="18" y1="6" x2="6" y2="18"></line>
 				<line x1="6" y1="6" x2="18" y2="18"></line>
@@ -293,142 +332,14 @@
 	</div>
 {/if}
 
+<!-- Add Tailwind utility classes for scrollbar styling -->
 <style>
-	.options-container {
-		width: 100%;
-		overflow: hidden;
-		background-color: var(--color-dark-primary);
-		border-top: 1px solid rgba(83, 123, 234, 0.2);
-		padding: 8px 0;
-		position: relative;
-		z-index: 40;
+	.scrollbar-none {
+		-ms-overflow-style: none;
+		scrollbar-width: none;
 	}
 
-	.options-scroll {
-		display: flex;
-		overflow-x: auto;
-		scrollbar-width: none; /* Firefox */
-		-ms-overflow-style: none; /* IE/Edge */
-		gap: 8px;
-		padding: 0 16px;
-		scroll-snap-type: x mandatory;
-	}
-
-	.options-scroll::-webkit-scrollbar {
-		display: none; /* Chrome/Safari/Opera */
-	}
-
-	.option-button {
-		flex: 0 0 auto;
-		padding: 8px 16px;
-		background-color: var(--color-dark-tertiary);
-		color: white;
-		border-radius: 20px;
-		font-size: 14px;
-		white-space: nowrap;
-		transition: all 0.2s ease;
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		scroll-snap-align: center;
-	}
-
-	.option-button.active {
-		background-color: var(--color-cornflower-blue);
-		font-weight: 500;
-		transform: scale(1.05);
-		box-shadow: 0 2px 8px rgba(83, 123, 234, 0.5);
-	}
-
-	.color-preview {
-		width: 16px;
-		height: 16px;
-		border-radius: 50%;
-		display: inline-block;
-		border: 1px solid rgba(255, 255, 255, 0.3);
-	}
-
-	.input-panel,
-	.color-picker-panel {
-		position: fixed;
-		bottom: 56px; /* Height of the options container */
-		left: 0;
-		right: 0;
-		background-color: var(--color-dark-tertiary);
-		padding: 16px;
-		border-top: 1px solid rgba(83, 123, 234, 0.2);
-		border-top-left-radius: 12px;
-		border-top-right-radius: 12px;
-		z-index: 50;
-		box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.2);
-	}
-
-	.field-container {
-		margin-bottom: 8px;
-	}
-
-	.field-container label {
-		display: block;
-		font-size: 14px;
-		margin-bottom: 8px;
-		color: white;
-		font-weight: 500;
-	}
-
-	.field-container input,
-	.field-container textarea {
-		width: 100%;
-		padding: 10px;
-		background-color: rgba(0, 0, 0, 0.2);
-		border: 1px solid rgba(83, 123, 234, 0.3);
-		border-radius: 6px;
-		color: white;
-	}
-
-	.field-container input:focus,
-	.field-container textarea:focus {
-		border-color: var(--color-cornflower-blue);
-		outline: none;
-	}
-
-	.close-button {
-		position: absolute;
-		top: 12px;
-		right: 12px;
-		background: rgba(0, 0, 0, 0.2);
-		border: none;
-		color: white;
-		cursor: pointer;
-		width: 28px;
-		height: 28px;
-		border-radius: 50%;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	}
-
-	.color-picker-controls {
-		display: flex;
-		gap: 10px;
-		align-items: center;
-	}
-
-	.color-input {
-		height: 40px;
-		width: 60px;
-		padding: 0;
-		border: none;
-		border-radius: 6px;
-		cursor: pointer;
-		background-color: transparent;
-	}
-
-	.text-input {
-		flex: 1;
-		padding: 10px;
-		background-color: rgba(0, 0, 0, 0.2);
-		border: 1px solid rgba(83, 123, 234, 0.3);
-		border-radius: 6px;
-		color: white;
+	.scrollbar-none::-webkit-scrollbar {
+		display: none;
 	}
 </style>

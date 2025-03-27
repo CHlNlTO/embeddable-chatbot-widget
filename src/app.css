@@ -52,9 +52,9 @@
 		scrollbar-color: #4b5563 transparent;
 	}
 
-	.scrollbar {
+	/* .scrollbar {
 		overflow: visible !important;
-	}
+	} */
 
 	.scrollbar::-webkit-scrollbar {
 		width: 8px;

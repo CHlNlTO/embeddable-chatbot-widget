@@ -30,8 +30,8 @@
 	}
 </script>
 
-<div class="bg-dark-primary scrollbar h-full space-y-6 overflow-y-auto p-6">
-	<div class="space-y-6">
+<div class="bg-dark-primary scrollbar space-y-6 overflow-y-auto p-6">
+	<div class="space-y-6 overflow-y-auto">
 		<!-- Assistant ID -->
 		<div>
 			<label for="assistantId" class="mb-2 block text-xs font-medium text-white">Assistant ID</label
